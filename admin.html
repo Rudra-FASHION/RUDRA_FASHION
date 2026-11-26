@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#100e0c">
+<title>Rudra Fashion Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #100e0c;
+    --surface: #1a1714;
+    --surface-2: #26211c;
+    --line: #362f28;
+    --fg: #f3ece1;
+    --muted: #a99f90;
+    --brass: #c9a25f;
+    --brass-ink: #1a1308;
+    --ok: #3fae6a;
+    --danger: #ea7d6b;
+    --display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f6f1e8; --surface: #fffdf8; --surface-2: #ece4d4; --line: #d9ceb9;
+      --fg: #1e1a15; --muted: #6c624f; --brass: #8a6528; --brass-ink: #fff9ec;
+      --ok: #178a47; --danger: #b23b29; color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f1e8; --surface: #fffdf8; --surface-2: #ece4d4; --line: #d9ceb9;
+    --fg: #1e1a15; --muted: #6c624f; --brass: #8a6528; --brass-ink: #fff9ec;
+    --ok: #178a47; --danger: #b23b29; color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 400 15px/1.55 var(--body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  h1, h2, h3, p, ol { margin: 0; }
+  :focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  .wrap { width: 100%; max-width: 680px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+  header { position: sticky; top: 0; z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
+  .brand { font-family: var(--display); font-size: 19px; font-weight: 700; letter-spacing: .1em; line-height: 1.1; white-space: nowrap; }
+  .brand span { color: var(--brass); }
+  .brand small { display: block; font: 700 10px/1.4 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+  .hbtns { display: flex; gap: 8px; }
+
+  main { padding-block: 22px calc(48px + env(safe-area-inset-bottom, 0px)); }
+  h1 { font-family: var(--display); font-size: 32px; line-height: 1.1; font-weight: 700; }
+  .lead { margin-top: 8px; color: var(--muted); }
+  .hint { color: var(--muted); font-size: 12.5px; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 22px; border-radius: 12px; border: 1px solid transparent; font-size: 15px; font-weight: 700; text-decoration: none; }
+  .btn-primary { background: var(--brass); color: var(--brass-ink); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost { background: transparent; border-color: var(--line); color: var(--fg); }
+  .btn-ghost:hover { border-color: var(--brass); }
+  .btn.small { min-height: 40px; padding: 0 16px; font-size: 13px; border-radius: 10px; }
+  .btn:disabled, .mini:disabled { opacity: .55; cursor: wait; }
+  .block { width: 100%; }
+  .mini { display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; min-height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: transparent; font-size: 12.5px; font-weight: 700; text-decoration: none; color: var(--fg); }
+  .mini:hover { border-color: var(--brass); }
+  .mini.armed { border-color: var(--danger); color: var(--danger); }
+
+  .field { display: grid; gap: 5px; }
+  .field > label, .label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .field input, .field select, .field textarea { width: 100%; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); outline: none; font-size: 16px; }
+  .field input, .field select { height: 50px; }
+  .field textarea { padding: 12px 14px; min-height: 90px; resize: vertical; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brass); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stack { display: grid; gap: 16px; }
+
+  /* setup */
+  .steps { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  .steps summary { padding: 14px 16px; font-weight: 700; cursor: pointer; }
+  .steps ol { padding: 0 18px 16px 36px; display: grid; gap: 10px; color: var(--muted); font-size: 14px; }
+  .steps li b { color: var(--fg); }
+  .steps li::marker { color: var(--brass); font-weight: 700; }
+  #setupForm { margin-top: 22px; }
+
+  /* home */
+  .notice { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 12px 14px; border: 1px solid var(--ok); border-radius: 12px; font-size: 14px; margin-bottom: 16px; }
+  .notice a { color: var(--brass); font-weight: 700; }
+  .count { margin: 18px 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .prow { display: grid; grid-template-columns: 60px 1fr; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .pthumb { width: 60px; height: 75px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; color: var(--muted); font-size: 10px; text-align: center; }
+  .pthumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pinfo { min-width: 0; }
+  .pinfo b { display: block; font-size: 14.5px; line-height: 1.35; overflow-wrap: anywhere; }
+  .pinfo small { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .pinfo .tagsold { color: var(--danger); font-weight: 700; }
+  .pbtns { grid-column: 2; display: flex; gap: 8px; }
+  .emptylist { padding: 40px 12px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 14px; margin-top: 16px; }
+
+  /* editor */
+  .a-title { font-family: var(--display); font-size: 28px; font-weight: 700; }
+  .photo-row { display: flex; gap: 16px; align-items: flex-start; }
+  .ph-box { flex: none; width: 130px; aspect-ratio: 4 / 5; border-radius: 12px; border: 1px dashed var(--line); background: var(--surface-2); display: grid; place-items: center; overflow: hidden; text-align: center; color: var(--muted); font-size: 12px; padding: 6px; }
+  .ph-box img { width: 100%; height: 100%; object-fit: cover; margin: -6px; max-width: none; }
+  .ph-side { display: grid; gap: 8px; justify-items: start; min-width: 0; }
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .seg button { min-height: 48px; border-radius: 10px; border: 1px solid var(--line); background: transparent; font-weight: 700; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); }
+  .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .size { min-width: 48px; height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: transparent; font-size: 14px; font-weight: 700; color: var(--muted); }
+  .size[aria-pressed="true"] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+  .add-size { display: flex; gap: 8px; margin-top: 4px; }
+  .add-size input { flex: 1; min-width: 0; }
+  .check { display: flex; align-items: center; gap: 12px; font-size: 15px; }
+  .check input { width: 22px; height: 22px; accent-color: var(--brass); }
+  .err { padding: 12px 14px; border: 1px solid var(--danger); border-radius: 10px; color: var(--danger); font-size: 14px; }
+  .status { padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; background: var(--surface); }
+  .a-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .a-actions .btn-primary { flex: 1 1 200px; }
+  .linkdel { justify-self: start; background: none; border: 1px solid transparent; border-radius: 8px; padding: 10px 4px; color: var(--muted); font-size: 14px; text-decoration: underline; }
+  .linkdel.armed { border-color: var(--danger); color: var(--danger); padding-inline: 10px; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 130; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: var(--fg); color: var(--bg); padding: 11px 20px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: opacity .25s, transform .25s; max-width: calc(100% - 32px); text-align: center; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap head">
+    <div class="brand">RUDRA <span>FASHION</span><small>Admin</small></div>
+    <div class="hbtns">
+      <a class="mini" id="storeLink" href="./" target="_blank" rel="noopener">Store dekho</a>
+      <button class="mini" id="disc" type="button" hidden>Disconnect</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- Connect -->
+  <section id="setup" hidden>
+    <h1>Store se connect karo</h1>
+    <p class="lead">Ye sirf ek baar karna hai. Uske baad yahan se kapde, photo ya price badloge to website par apne aap badal jayega.</p>
+    <details class="steps" open>
+      <summary>Token kaise banate hain</summary>
+      <ol>
+        <li>GitHub kholo, apni <b>profile photo</b> dabao, phir <b>Settings</b>.</li>
+        <li>Sabse neeche <b>Developer settings</b>, phir <b>Personal access tokens</b>, phir <b>Fine-grained tokens</b>, phir <b>Generate new token</b>.</li>
+        <li>Name me <b>rudra-admin</b> likho. Expiration me sabse lamba time chuno.</li>
+        <li><b>Repository access</b> me <b>Only select repositories</b> chuno aur apna store repo chuno.</li>
+        <li><b>Permissions</b>, phir <b>Repository permissions</b>, phir <b>Contents</b> ko <b>Read and write</b> karo.</li>
+        <li><b>Generate token</b> dabao. Token copy karke neeche paste karo.</li>
+      </ol>
+    </details>
+    <form id="setupForm" class="stack" novalidate>
+      <div class="field"><label for="repoIn">GitHub repo (naam/repo)</label><input id="repoIn" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="rudra-fashion/RUDRA_FASHION"></div>
+      <div class="field"><label for="tokenIn">Token</label><input id="tokenIn" type="password" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="github_pat_..."></div>
+      <p class="hint">Ye token sirf is phone ke browser me rehta hai. Kisi ko mat dena. Kabhi bhi Disconnect dabake hata sakte ho.</p>
+      <p class="err" id="setupErr" hidden></p>
+      <button class="btn btn-primary block" id="connectBtn" type="submit">Connect karo</button>
+    </form>
+  </section>
+
+  <!-- Product list -->
+  <section id="home" hidden>
+    <div class="notice" id="notice" hidden>
+      <span id="noticeText"></span><a id="noticeLink" href="./" target="_blank" rel="noopener">Store kholo</a>
+    </div>
+    <button class="btn btn-primary block" id="addNew" type="button">+ Naya kapda jodo</button>
+    <p class="count" id="count"></p>
+    <div id="list"></div>
+  </section>
+
+  <!-- Add / edit -->
+  <form id="editor" class="stack" hidden novalidate>
+    <h2 class="a-title" id="editTitle">Naya kapda</h2>
+    <div class="field">
+      <span class="label">Photo</span>
+      <div class="photo-row">
+        <div class="ph-box" id="phBox"></div>
+        <div class="ph-side">
+          <label class="btn btn-ghost small" for="pfPhoto">Photo chuno</label>
+          <input id="pfPhoto" type="file" accept="image/*" hidden>
+          <button class="btn btn-ghost small" id="phRemove" type="button">Photo hatao</button>
+          <p class="hint">Photo seedhi (portrait) ho aur kapda beech me ho. Automatic chhoti ho jati hai.</p>
+        </div>
+      </div>
+    </div>
+    <div class="field"><label for="pfName">Naam</label><input id="pfName" type="text" maxlength="80" placeholder="Jaise: Men's Cotton Polo T-shirt"></div>
+    <div class="field">
+      <span class="label">Category</span>
+      <div class="seg" id="pfCat">
+        <button type="button" data-pcat="Men" aria-pressed="false">Men</button>
+        <button type="button" data-pcat="Women" aria-pressed="false">Women</button>
+        <button type="button" data-pcat="Kids" aria-pressed="false">Kids</button>
+      </div>
+    </div>
+    <div class="two">
+      <div class="field"><label for="pfPrice">Bechne ka price (₹)</label><input id="pfPrice" type="number" inputmode="numeric" min="1" placeholder="499"></div>
+      <div class="field"><label for="pfMrp">MRP (₹), zaroori nahi</label><input id="pfMrp" type="number" inputmode="numeric" min="1" placeholder="999"></div>
+    </div>
+    <p class="hint" id="discHint"></p>
+    <div class="field"><label for="pfDesc">Description</label><textarea id="pfDesc" maxlength="160" placeholder="Fabric, fit, kiske liye hai"></textarea></div>
+    <div class="field">
+      <span class="label">Sizes jo available hain</span>
+      <div class="sizes" id="pfSizes"></div>
+      <div class="add-size"><input id="pfCustom" type="text" maxlength="8" placeholder="Doosra size, jaise 28 ya Free" style="height:46px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:16px"><button class="mini" id="pfAddSize" type="button">Jodo</button></div>
+    </div>
+    <label class="check"><input id="pfSold" type="checkbox"> Sold out hai</label>
+    <p class="err" id="pfErr" hidden></p>
+    <p class="status" id="status" role="status" hidden></p>
+    <div class="a-actions">
+      <button class="btn btn-primary" id="pfSave" type="submit">Save karo</button>
+      <button class="btn btn-ghost" id="pfCancel" type="button">Wapas</button>
+    </div>
+    <button class="linkdel" id="pfDelete" type="button" hidden>Ye kapda hata do</button>
+  </form>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const inr = n => "₹" + Number(n).toLocaleString("en-IN");
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  const SIZE_SETS = { Men: ["S", "M", "L", "XL", "XXL"], Women: ["S", "M", "L", "XL", "XXL"], Kids: ["2-4Y", "4-6Y", "6-8Y", "8-10Y", "10-12Y"] };
+  const DEFAULT_LOOK = { Men: ["tee", "#d8d0c0"], Women: ["kurti", "#8c2f45"], Kids: ["hoodie", "#b5533a"] };
+
+  const S = { token: "", repo: "", branch: "main", products: [], thumbs: {}, cur: null, isNew: false, busy: false, delTimer: 0, delArm: null };
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 3000);
+  }
+
+  // ---------- GitHub ----------
+  async function gh(path, opt) {
+    opt = opt || {};
+    const headers = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", Authorization: "Bearer " + S.token };
+    if (opt.body) headers["Content-Type"] = "application/json";
+    const r = await fetch("https://api.github.com/repos/" + S.repo + path, { method: opt.method || "GET", headers, body: opt.body, cache: "no-store" });
+    let data = null; try { data = await r.json(); } catch (e) {}
+    if (!r.ok) { const err = new Error((data && data.message) || "HTTP " + r.status); err.status = r.status; throw err; }
+    return data;
+  }
+  const toB64 = str => { const bytes = new TextEncoder().encode(str); let s = ""; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); };
+  const fromB64 = b => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g, "")), c => c.charCodeAt(0)));
+
+  async function getFile(path) {
+    try { return await gh("/contents/" + path + "?ref=" + encodeURIComponent(S.branch)); }
+    catch (e) { if (e.status === 404) return null; throw e; }
+  }
+  const putFile = (path, b64, message, sha) => gh("/contents/" + path, { method: "PUT", body: JSON.stringify({ message, content: b64, branch: S.branch, ...(sha ? { sha } : {}) }) });
+  async function tryDeleteFile(path) {
+    try {
+      const f = await getFile(path); if (!f) return;
+      await gh("/contents/" + path, { method: "DELETE", body: JSON.stringify({ message: "Remove old photo", sha: f.sha, branch: S.branch }) });
+    } catch (e) {}
+  }
+  function parseList(file) {
+    if (!file) return [];
+    const d = JSON.parse(fromB64(file.content));
+    return Array.isArray(d.products) ? d.products : [];
+  }
+  // Always edits the newest products.json so nothing is overwritten by an old copy.
+  async function commit(mutator, message) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const file = await getFile("products.json");
+      const next = mutator(parseList(file));
+      const body = JSON.stringify({ products: next, updated: new Date().toISOString() }, null, 2) + "\n";
+      try {
+        await putFile("products.json", toB64(body), message, file && file.sha);
+        S.products = next; return;
+      } catch (e) { if (attempt === 0 && (e.status === 409 || e.status === 422)) continue; throw e; }
+    }
+  }
+  function explain(e) {
+    const s = e && e.status;
+    if (s === 401) return "Token galat hai ya expire ho gaya. Disconnect karke naya token daalo.";
+    if (s === 403) return "Is token ko likhne ki permission nahi hai. Token me Contents ko Read and write karo.";
+    if (s === 404) return "Repo nahi mila. Repo ka naam check karo aur token me ye repo chuna hona chahiye.";
+    if (s === 409 || s === 422) return "Store kahin aur se badla hai. Dobara Save karo.";
+    if (!s) return "Internet check karo aur dobara try karo.";
+    return "GitHub ne kaha: " + e.message;
+  }
+
+  // ---------- Screens ----------
+  function show(which) {
+    $("#setup").hidden = which !== "setup";
+    $("#home").hidden = which !== "home";
+    $("#editor").hidden = which !== "editor";
+    $("#disc").hidden = which === "setup";
+    window.scrollTo(0, 0);
+  }
+  const imgSrc = p => S.thumbs[p.img] || (p.img && /^(images\/[A-Za-z0-9._-]+|https:\/\/.+)$/.test(p.img) ? p.img : "");
+
+  function renderList() {
+    $("#count").textContent = S.products.length ? S.products.length + " kapde store me" : "";
+    $("#list").innerHTML = S.products.length ? S.products.map(p => {
+      const src = imgSrc(p);
+      return `<div class="prow">
+        <div class="pthumb">${src ? `<img src="${esc(src)}" alt="">` : "Photo nahi"}</div>
+        <div class="pinfo"><b>${esc(p.name)}</b><small>${esc(p.category)} · ${inr(p.price)}${p.mrp > p.price ? " (MRP " + inr(p.mrp) + ")" : ""}${p.soldOut ? ' · <span class="tagsold">Sold out</span>' : ""}</small></div>
+        <div class="pbtns">
+          <button class="mini" type="button" data-edit="${esc(p.id)}">Badlo</button>
+          <button class="mini${S.delArm === p.id ? " armed" : ""}" type="button" data-del="${esc(p.id)}">${S.delArm === p.id ? "Pakka hatana hai?" : "Hatao"}</button>
+        </div>
+      </div>`;
+    }).join("
