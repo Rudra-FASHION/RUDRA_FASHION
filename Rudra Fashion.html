@@ -1,0 +1,885 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Rudra Fashion</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Layout: sticky bar, editorial hero with category arches, product grid, cart drawer ending in a WhatsApp order. Owners get a Manage shop sheet to add products and photos. */
+  :root {
+    --bg: #100e0c;
+    --surface: #1a1714;
+    --surface-2: #26211c;
+    --line: #362f28;
+    --fg: #f3ece1;
+    --muted: #a99f90;
+    --brass: #c9a25f;
+    --brass-ink: #1a1308;
+    --wa: #25a35a;
+    --wa-ink: #ffffff;
+    --danger: #ea7d6b;
+    --display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f6f1e8;
+      --surface: #fffdf8;
+      --surface-2: #ece4d4;
+      --line: #d9ceb9;
+      --fg: #1e1a15;
+      --muted: #6c624f;
+      --brass: #8a6528;
+      --brass-ink: #fff9ec;
+      --wa: #178a47;
+      --danger: #b23b29;
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f1e8;
+    --surface: #fffdf8;
+    --surface-2: #ece4d4;
+    --line: #d9ceb9;
+    --fg: #1e1a15;
+    --muted: #6c624f;
+    --brass: #8a6528;
+    --brass-ink: #fff9ec;
+    --wa: #178a47;
+    --danger: #b23b29;
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-padding-top: 76px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 400 15px/1.6 var(--body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+    z-index: 30; background: var(--bg);
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  h1, h2, h3, h4, p, dl, dd { margin: 0; }
+  :focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+  .wrap {
+    width: 100%; max-width: 1180px; margin-inline: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  .topbar { background: var(--brass); color: var(--brass-ink); font-size: 12px; font-weight: 700; letter-spacing: .05em; text-align: center; padding-block: 8px; }
+
+  header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }
+  .brand { font-family: var(--display); font-size: 27px; font-weight: 700; letter-spacing: .14em; white-space: nowrap; }
+  .brand span { color: var(--brass); }
+  .nav { display: flex; gap: 4px; }
+  .nav button { background: none; border: 0; padding: 8px 14px; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border-radius: 999px; }
+  .nav button:hover { color: var(--fg); }
+  .bag { display: inline-flex; align-items: center; gap: 8px; background: var(--brass); color: var(--brass-ink); border: 0; border-radius: 999px; padding: 9px 16px; font-size: 13px; font-weight: 700; }
+  .bag b { background: var(--brass-ink); color: var(--brass); min-width: 22px; height: 22px; display: inline-grid; place-items: center; border-radius: 999px; font-size: 11px; padding-inline: 6px; font-variant-numeric: tabular-nums; }
+  .bag.bump { animation: bump .35s ease; }
+  @keyframes bump { 40% { transform: scale(1.08); } }
+
+  .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding-block: 52px 36px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--brass); margin-bottom: 18px; }
+  .hero h1 { font-family: var(--display); font-weight: 600; font-size: clamp(2.7rem, 6.6vw, 4.9rem); line-height: .98; letter-spacing: -.01em; text-wrap: balance; }
+  .hero h1 em { color: var(--brass); font-style: italic; }
+  .hero .lede { margin-top: 20px; max-width: 46ch; color: var(--muted); font-size: 16px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 24px; border-radius: 999px; border: 1px solid transparent; font-size: 14px; font-weight: 700; text-decoration: none; }
+  .btn.small { min-height: 38px; padding: 0 16px; font-size: 13px; }
+  .btn-primary { background: var(--brass); color: var(--brass-ink); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:disabled { opacity: .55; cursor: wait; }
+  .btn-ghost { border-color: var(--line); color: var(--fg); background: transparent; }
+  .btn-ghost:hover { border-color: var(--brass); }
+
+  .arches { display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); gap: 12px; align-items: end; }
+  .arch { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; aspect-ratio: 3 / 5; padding: 0 6px 14px; border: 1px solid var(--line); border-radius: 999px 999px 16px 16px; background: linear-gradient(180deg, var(--surface-2), var(--surface)); overflow: hidden; text-align: center; transition: border-color .2s, transform .25s; }
+  .arch:nth-child(2) { aspect-ratio: 3 / 5.7; }
+  .arch:hover { border-color: var(--brass); transform: translateY(-4px); }
+  .arch .garment { width: 82%; max-height: 72%; }
+  .arch .ph { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+  .arch.has-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.75)); }
+  .arch.has-photo .arch-label { position: relative; z-index: 1; color: #fff; }
+  .arch.has-photo .arch-label small { color: rgba(255,255,255,.8); }
+  .arch-label { display: grid; gap: 0; margin-top: 8px; }
+  .arch-label b { font-family: var(--display); font-size: 22px; font-weight: 700; line-height: 1.1; }
+  .arch-label small { font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+
+  .garment { display: block; filter: drop-shadow(0 10px 14px rgba(0,0,0,.28)); }
+  .garment .g { fill: var(--tone); }
+  .garment .shade { fill: url(#shade); }
+  .garment .ln { fill: none; stroke: rgba(0,0,0,.3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .trust { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid var(--line); margin-top: 20px; }
+  .trust > div { padding: 18px 16px; border-left: 1px solid var(--line); }
+  .trust > div:first-child { border-left: 0; padding-left: 0; }
+  .trust b { display: block; font-size: 13px; font-weight: 700; }
+  .trust span { font-size: 12.5px; color: var(--muted); }
+
+  .shop { padding-top: 56px; }
+  .shop-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; }
+  .shop h2, .why h2 { font-family: var(--display); font-weight: 600; font-size: clamp(2rem, 4.6vw, 3rem); line-height: 1.05; text-wrap: balance; }
+  .search { width: 100%; max-width: 320px; height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); outline: none; font-size: 14px; }
+  .search::placeholder { color: var(--muted); }
+  .search:focus { border-color: var(--brass); }
+  .chips { display: flex; gap: 8px; margin-top: 18px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .chip { flex: none; background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .chip small { margin-left: 6px; font-variant-numeric: tabular-nums; opacity: .75; }
+  .chip:hover { color: var(--fg); border-color: var(--brass); }
+  .chip[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 24px; }
+  .card { display: flex; flex-direction: column; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; transition: border-color .2s, transform .25s; }
+  .card:hover { border-color: var(--brass); transform: translateY(-3px); }
+  .art { position: relative; aspect-ratio: 4 / 5; display: grid; place-items: center; background: radial-gradient(120% 90% at 50% 20%, var(--surface-2), var(--surface)); overflow: hidden; }
+  .art .garment { width: 68%; transition: transform .4s; }
+  .card:hover .art .garment { transform: scale(1.04); }
+  .art img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+  .is-sold .art img, .is-sold .art .garment { opacity: .45; }
+  .off, .sold { position: absolute; top: 12px; left: 12px; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 6px; letter-spacing: .02em; }
+  .off { background: var(--brass); color: var(--brass-ink); }
+  .sold { background: var(--fg); color: var(--bg); }
+  .tag { position: absolute; top: 12px; right: 12px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; letter-spacing: .08em; text-transform: uppercase; }
+  .body { display: flex; flex-direction: column; flex: 1; padding: 16px; }
+  .name { font-size: 15px; font-weight: 700; line-height: 1.35; }
+  .desc { margin-top: 4px; color: var(--muted); font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .sizes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .size { min-width: 36px; height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: transparent; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .size:hover { border-color: var(--brass); color: var(--fg); }
+  .size[aria-pressed="true"] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+  .price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-top: auto; padding-top: 16px; }
+  .price b { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .price s { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .price em { margin-left: auto; font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: .1em; color: var(--brass); }
+  .add { margin-top: 12px; width: 100%; min-height: 44px; border: 0; border-radius: 10px; background: var(--brass); color: var(--brass-ink); font-size: 13.5px; font-weight: 700; }
+  .add:hover { filter: brightness(1.08); }
+  .add:disabled { background: var(--surface-2); color: var(--muted); cursor: not-allowed; filter: none; }
+  .empty { grid-column: 1 / -1; padding: 56px 16px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 16px; }
+
+  .why { display: grid; grid-template-columns: 1fr 1.35fr; gap: 56px; padding-block: 72px 56px; }
+  .why p { margin-top: 16px; color: var(--muted); max-width: 40ch; }
+  .specs { border-bottom: 1px solid var(--line); }
+  .specs div { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .specs dt { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--brass); padding-top: 2px; }
+  .specs dd { min-width: 0; }
+
+  footer { border-top: 1px solid var(--line); padding-block: 28px 36px; }
+  .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; font-size: 13px; color: var(--muted); }
+  .foot a { color: var(--brass); font-weight: 700; text-decoration: none; }
+  .foot a:hover { text-decoration: underline; }
+
+  .overlay { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.6); opacity: 0; pointer-events: none; transition: opacity .25s; }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+  .drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 100; width: min(440px, 100%); display: flex; flex-direction: column; background: var(--bg); border-left: 1px solid var(--line); transform: translateX(100%); visibility: hidden; transition: transform .3s ease, visibility 0s .3s; }
+  .drawer.open { transform: none; visibility: visible; transition: transform .3s ease; }
+  .d-head { display: flex; align-items: center; justify-content: space-between; padding: calc(14px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px 20px; border-bottom: 1px solid var(--line); }
+  .d-head h3 { font-family: var(--display); font-size: 26px; font-weight: 700; }
+  .x { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 16px; line-height: 1; }
+  .x:hover { border-color: var(--brass); }
+  .d-body { flex: 1; overflow-y: auto; padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px 20px; }
+  .ship { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }
+  .ship i { display: block; height: 4px; border-radius: 4px; background: var(--surface-2); margin-top: 8px; overflow: hidden; }
+  .ship i::after { content: ""; display: block; height: 100%; width: var(--p, 0%); background: var(--brass); transition: width .3s; }
+  .line { display: grid; grid-template-columns: 54px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .thumb { width: 54px; height: 64px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; }
+  .thumb .garment { width: 74%; filter: none; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .line b { display: block; font-size: 13px; line-height: 1.35; }
+  .line small { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .qty { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; }
+  .qty button { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--line); background: transparent; font-size: 14px; line-height: 1; }
+  .qty button:hover { border-color: var(--brass); }
+  .qty span { min-width: 22px; text-align: center; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .rm { background: none; border: 0; color: var(--muted); font-size: 12px; text-decoration: underline; padding: 4px; align-self: start; }
+  .cart-empty { padding: 36px 8px; text-align: center; color: var(--muted); }
+
+  .form { margin-top: 20px; display: grid; gap: 14px; }
+  .field label { display: block; margin-bottom: 5px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .field input, .field select, .field textarea { width: 100%; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); outline: none; font-size: 14px; }
+  .field input, .field select { height: 46px; }
+  .field textarea { padding: 12px 14px; resize: vertical; min-height: 84px; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brass); }
+  .field.bad input { border-color: var(--danger); }
+  .err { margin-top: 4px; font-size: 12px; color: var(--danger); }
+  .upi { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); font-size: 12.5px; }
+  .upi code { font: 700 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; user-select: all; word-break: break-all; }
+  .upi button { margin-left: auto; border: 0; border-radius: 6px; padding: 5px 12px; background: var(--brass); color: var(--brass-ink); font-size: 12px; font-weight: 700; }
+  .upi p { flex-basis: 100%; color: var(--muted); }
+
+  .d-foot { padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) 20px; border-top: 1px solid var(--line); background: var(--bg); }
+  .sum { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .sum.total { margin-top: 6px; color: var(--fg); font-size: 18px; font-weight: 800; }
+  .wa { margin-top: 12px; width: 100%; min-height: 50px; border: 0; border-radius: 12px; background: var(--wa); color: var(--wa-ink); font-size: 15px; font-weight: 700; }
+  .wa:hover { filter: brightness(1.08); }
+  .wa:disabled { opacity: .5; cursor: not-allowed; }
+  .done { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--wa); border-radius: 10px; font-size: 13px; }
+  .done a { color: var(--wa); font-weight: 700; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 130; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: var(--fg); color: var(--bg); padding: 11px 20px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: opacity .25s, transform .25s; max-width: calc(100% - 32px); text-align: center; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* Owner tools */
+  .manage { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: inline-flex; align-items: center; gap: 8px; background: var(--fg); color: var(--bg); border: 0; border-radius: 999px; padding: 12px 18px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+  .sheet { position: fixed; inset: 0; z-index: 110; display: flex; flex-direction: column; background: var(--bg); }
+  .s-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }
+  .s-head h3 { font-family: var(--display); font-size: 26px; font-weight: 700; }
+  .s-body { flex: 1; overflow-y: auto; }
+  .s-in { width: 100%; max-width: 640px; margin-inline: auto; padding: 18px max(16px, env(safe-area-inset-right, 0px)) calc(32px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+  .hint { color: var(--muted); font-size: 12.5px; }
+  .a-title { font-family: var(--display); font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+  .prow { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .pthumb { width: 56px; height: 70px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; }
+  .pthumb img { width: 100%; height: 100%; object-fit: cover; }
+  .pthumb .garment { width: 74%; filter: none; }
+  .pinfo { min-width: 0; }
+  .pinfo b { display: block; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+  .pinfo small { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .pbtns { display: flex; gap: 6px; }
+  .mini { min-height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line); background: transparent; font-size: 12.5px; font-weight: 700; }
+  .mini:hover { border-color: var(--brass); }
+  .mini.armed, .linkdel.armed { border-color: var(--danger); color: var(--danger); }
+  .aform { display: grid; gap: 16px; }
+  .aform .sizes { margin-top: 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .photo-row { display: flex; gap: 16px; align-items: flex-start; }
+  .ph-box { flex: none; width: 128px; aspect-ratio: 4 / 5; border-radius: 12px; border: 1px dashed var(--line); background: var(--surface-2); display: grid; place-items: center; overflow: hidden; text-align: center; color: var(--muted); font-size: 12px; padding: 6px; }
+  .ph-box img { width: 100%; height: 100%; object-fit: cover; margin: -6px; max-width: none; }
+  .ph-box .garment { width: 70%; filter: none; }
+  .ph-side { display: grid; gap: 8px; justify-items: start; min-width: 0; }
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .seg button { min-height: 44px; border-radius: 10px; border: 1px solid var(--line); background: transparent; font-weight: 700; font-size: 14px; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); }
+  .add-size { display: flex; gap: 8px; margin-top: 10px; }
+  .add-size input { flex: 1; min-width: 0; }
+  .check { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .check input { width: 20px; height: 20px; accent-color: var(--brass); }
+  .style-box { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .style-box summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .style-box .field { margin-top: 14px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+  .swatches button { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); background: var(--sw); padding: 0; }
+  .swatches button[aria-pressed="true"] { border-color: var(--fg); box-shadow: 0 0 0 2px var(--bg) inset; }
+  .a-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .a-actions .btn-primary { flex: 1 1 200px; }
+  .linkdel { justify-self: start; background: none; border: 1px solid transparent; border-radius: 8px; padding: 8px 4px; color: var(--muted); font-size: 13px; text-decoration: underline; }
+  #addNew { width: 100%; margin-bottom: 10px; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 36px; padding-top: 36px; }
+    .why { grid-template-columns: 1fr; gap: 28px; padding-top: 52px; }
+    .trust { grid-template-columns: repeat(2, 1fr); }
+    .trust > div:nth-child(3) { border-left: 0; padding-left: 0; }
+    .trust > div:nth-child(n+3) { border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 640px) {
+    .nav { display: none; }
+    .brand { font-size: 23px; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .body { padding: 12px; }
+    .name { font-size: 13.5px; }
+    .price b { font-size: 17px; }
+    .price em { display: none; }
+    .size { min-width: 32px; height: 30px; padding: 0 8px; }
+    .specs div { grid-template-columns: 1fr; gap: 4px; }
+    .prow { grid-template-columns: 56px 1fr; }
+    .pbtns { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity=".18"/>
+      <stop offset=".55" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".3"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="topbar"><div class="wrap">Free delivery across India above ₹699 &nbsp;·&nbsp; Cash on delivery available</div></div>
+
+<header>
+  <div class="wrap head">
+    <div class="brand">RUDRA <span>FASHION</span></div>
+    <nav class="nav" aria-label="Categories">
+      <button type="button" data-nav="Men">Men</button>
+      <button type="button" data-nav="Women">Women</button>
+      <button type="button" data-nav="Kids">Kids</button>
+    </nav>
+    <button class="bag" id="bagBtn" type="button" aria-label="Open shopping bag">Bag <b id="cartCount">0</b></button>
+  </div>
+</header>
+
+<main>
+  <section class="wrap hero" aria-labelledby="heroTitle">
+    <div>
+      <p class="eyebrow">New season collection 2026</p>
+      <h1 id="heroTitle">Style for the whole family, <em>delivered to your door.</em></h1>
+      <p class="lede">Premium fabrics and clean fits for men, women and kids, at honest prices, with delivery anywhere in India.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#shop" id="shopNow">Shop the collection</a>
+        <a class="btn btn-ghost" id="heroWa" href="#" target="_blank" rel="noopener">Ask us on WhatsApp</a>
+      </div>
+    </div>
+    <div class="arches" id="arches" role="group" aria-label="Shop by category"></div>
+  </section>
+
+  <div class="wrap">
+    <div class="trust">
+      <div><b>Pan-India delivery</b><span>Free above ₹699</span></div>
+      <div><b>Cash on delivery</b><span>Or pay by UPI</span></div>
+      <div><b>7-day exchange</b><span>Easy, no fuss</span></div>
+      <div><b>WhatsApp support</b><span>Sizes, orders, tracking</span></div>
+    </div>
+  </div>
+
+  <section class="wrap shop" id="shop" aria-labelledby="shopTitle">
+    <div class="shop-head">
+      <h2 id="shopTitle">The collection</h2>
+      <input class="search" id="searchInput" type="search" placeholder="Search shirt, kurti, kids wear" aria-label="Search outfits" autocomplete="off">
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+    <div class="grid" id="productGrid" aria-live="polite"></div>
+  </section>
+
+  <!-- Add real customer reviews here once you have them. -->
+  <section class="wrap why" aria-labelledby="whyTitle">
+    <div>
+      <h2 id="whyTitle">Good fabric, fair prices, easy to order.</h2>
+      <p>Every piece is picked for fabric and fit, so you get showroom quality at prices that make sense.</p>
+    </div>
+    <dl class="specs">
+      <div><dt>Fabric</dt><dd>240 GSM bio-washed cotton tees, soft rayon kurtis, breathable cotton-linen shirts and fleece for the kids.</dd></div>
+      <div><dt>Delivery</dt><dd>Delivered across India. Free above ₹699.</dd></div>
+      <div><dt>Exchange</dt><dd>Wrong size? Exchange within 7 days.</dd></div>
+      <div><dt>Payment</dt><dd>Cash on delivery, or UPI for faster dispatch.</dd></div>
+      <div><dt>Support</dt><dd>Message us on WhatsApp for sizing help, bulk orders and tracking.</dd></div>
+    </dl>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span><strong style="color:var(--fg)">RUDRA FASHION</strong> &nbsp; Men, women and kids clothing</span>
+    <span>Bulk orders and support: <a id="footWa" href="#" target="_blank" rel="noopener">WhatsApp +91 92510 73424</a></span>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+  <div class="d-head">
+    <h3 id="drawerTitle">Your bag</h3>
+    <button class="x" id="closeBtn" type="button" aria-label="Close bag">✕</button>
+  </div>
+  <div class="d-body">
+    <div class="ship" id="ship"></div>
+    <div id="cartItems"></div>
+    <form class="form" id="orderForm" novalidate>
+      <div class="field" id="fName">
+        <label for="custName">Full name</label>
+        <input id="custName" type="text" autocomplete="name" placeholder="Your full name">
+        <p class="err" hidden>Please enter your name.</p>
+      </div>
+      <div class="field" id="fPhone">
+        <label for="custPhone">WhatsApp number</label>
+        <input id="custPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="10-digit mobile number">
+        <p class="err" hidden>Enter a valid 10-digit mobile number.</p>
+      </div>
+      <div class="field" id="fAddr">
+        <label for="custAddress">Delivery address and pincode</label>
+        <input id="custAddress" type="text" autocomplete="street-address" placeholder="House no, street, city, pincode">
+        <p class="err" hidden>Please enter your full address with pincode.</p>
+      </div>
+      <div class="field">
+        <label for="payMode">Payment</label>
+        <select id="payMode">
+          <option value="COD">Cash on delivery</option>
+          <option value="UPI">UPI (faster dispatch)</option>
+        </select>
+      </div>
+      <div class="upi" id="upiBox" hidden>
+        <span>UPI ID</span><code id="upiText"></code>
+        <button type="button" id="copyUpi">Copy</button>
+        <p>After paying, send the payment screenshot on WhatsApp.</p>
+      </div>
+    </form>
+  </div>
+  <div class="d-foot">
+    <div class="sum"><span>Subtotal</span><span id="subTotal">₹0</span></div>
+    <div class="sum"><span>Delivery</span><span id="delivery">Free</span></div>
+    <div class="sum total"><span>Total</span><span id="cartTotal">₹0</span></div>
+    <button class="wa" id="orderBtn" type="button">Confirm order on WhatsApp</button>
+    <div class="done" id="done" hidden>
+      Your order message is ready. WhatsApp should open in a new tab. If it does not, <a id="waLink" href="#" target="_blank" rel="noopener">open WhatsApp here</a> and press send.
+    </div>
+  </div>
+</aside>
+
+<div class="toast" id="toast" role="status"></div>
+
+<!-- Owner tools: only shown to people who can edit this page -->
+<button class="manage" id="manageBtn" type="button" hidden>Manage shop</button>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="s-head">
+    <h3 id="sheetTitle">Manage products</h3>
+    <button class="x" id="sheetClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="s-body" id="sheetBody"><div class="s-in">
+    <div id="listView">
+      <button class="btn btn-primary" id="addNew" type="button">+ Add new product</button>
+      <p class="hint">New products appear first in the shop. Changes go live as soon as you save.</p>
+      <div id="adminList"></div>
+    </div>
+    <form class="aform" id="editView" hidden novalidate>
+      <h4 class="a-title" id="editTitle">New product</h4>
+      <div class="field">
+        <label>Photo</label>
+        <div class="photo-row">
+          <div class="ph-box" id="phBox"></div>
+          <div class="ph-side">
+            <label class="btn btn-ghost small" for="pfPhoto">Choose photo</label>
+            <input id="pfPhoto" type="file" accept="image/*" hidden>
+            <button class="btn btn-ghost small" id="phRemove" type="button">Remove photo</button>
+            <p class="hint">Saved as a portrait picture. Keep the clothes in the middle.</p>
+          </div>
+        </div>
+      </div>
+      <div class="field"><label for="pfName">Name</label><input id="pfName" type="text" maxlength="80" placeholder="e.g. Men's Cotton Polo T-shirt"></div>
+      <div class="field"><label>Category</label>
+        <div class="seg" id="pfCat">
+          <button type="button" data-pcat="Men" aria-pressed="false">Men</button>
+          <button type="button" data-pcat="Women" aria-pressed="false">Women</button>
+          <button type="button" data-pcat="Kids" aria-pressed="false">Kids</button>
+        </div>
+      </div>
+      <div class="two">
+        <div class="field"><label for="pfPrice">Selling price (₹)</label><input id="pfPrice" type="number" inputmode="numeric" min="1" placeholder="499"></div>
+        <div class="field"><label for="pfMrp">MRP (₹), optional</label><input id="pfMrp" type="number" inputmode="numeric" min="1" placeholder="999"></div>
+      </div>
+      <p class="hint" id="discHint"></p>
+      <div class="field"><label for="pfDesc">Description</label><textarea id="pfDesc" rows="3" maxlength="160" placeholder="Fabric, fit, who it is for"></textarea></div>
+      <div class="field"><label>Sizes available</label>
+        <div class="sizes" id="pfSizes"></div>
+        <div class="add-size"><input id="pfCustom" type="text" maxlength="8" placeholder="Other size, e.g. 28 or Free"><button class="mini" id="pfAddSize" type="button">Add</button></div>
+      </div>
+      <label class="check"><input id="pfSold" type="checkbox"> Mark as sold out</label>
+      <details class="style-box">
+        <summary>Picture style, used only when there is no photo</summary>
+        <div class="field"><label for="pfType">Clothing shape</label><select id="pfType"></select></div>
+        <div class="field"><label>Colour</label><div class="swatches" id="pfTones"></div></div>
+      </details>
+      <p class="err" id="pfErr" hidden></p>
+      <div class="a-actions">
+        <button class="btn btn-primary" id="pfSave" type="submit">Save and publish</button>
+        <button class="btn btn-ghost" id="pfCancel" type="button">Cancel</button>
+      </div>
+      <button class="linkdel" id="pfDelete" type="button" hidden>Delete this product</button>
+    </form>
+  </div></div>
+</section>
+
+<script type="application/json" id="data">{"products": [{"id": "p1", "name": "Men's Premium Oversized Tee", "category": "Men", "price": 499, "mrp": 999, "desc": "240 GSM pure cotton bio-wash oversized drop-shoulder t-shirt.", "sizes": ["S", "M", "L", "XL"], "type": "tee", "tone": "#d8d0c0", "img": "", "soldOut": false}, {"id": "p2", "name": "Women's Floral Anarkali Kurti Set", "category": "Women", "price": 799, "mrp": 1599, "desc": "Soft rayon printed Anarkali kurti with matching pant and dupatta.", "sizes": ["S", "M", "L", "XL", "XXL"], "type": "kurti", "tone": "#8c2f45", "img": "", "soldOut": false}, {"id": "p3", "name": "Kids Festive Ethnic Kurta Pyjama", "category": "Kids", "price": 549, "mrp": 1099, "desc": "Comfortable breathable cotton silk festive wear for boys (2-10 yrs).", "sizes": ["2-4Y", "4-6Y", "6-8Y", "8-10Y"], "type": "kurta", "tone": "#c58b2b", "img": "", "soldOut": false}, {"id": "p4", "name": "Men's Classic Linen Casual Shirt", "category": "Men", "price": 649, "mrp": 1299, "desc": "Breathable cotton-linen blend slim-fit shirt for daily and office wear.", "sizes": ["M", "L", "XL", "XXL"], "type": "shirt", "tone": "#7f9480", "img": "", "soldOut": false}, {"id": "p5", "name": "Women's Trendy Co-Ord Set", "category": "Women", "price": 749, "mrp": 1499, "desc": "Stylish western two-piece top and trouser set for casual outings.", "sizes": ["S", "M", "L", "XL"], "type": "coord", "tone": "#3f5f7d", "img": "", "soldOut": false}, {"id": "p6", "name": "Kids Cotton Hoodie & Jogger Set", "category": "Kids", "price": 599, "mrp": 1199, "desc": "Soft fleece winter tracksuit set for active kids.", "sizes": ["2-4Y", "4-6Y", "6-8Y", "8-10Y"], "type": "hoodie", "tone": "#b5533a", "img": "", "soldOut": false}, {"id": "p7", "name": "Men's Utility Cargo Joggers", "category": "Men", "price": 699, "mrp": 1399, "desc": "Relaxed tapered cargo joggers with side pockets and a soft stretch waist.", "sizes": ["M", "L", "XL", "XXL"], "type": "cargo", "tone": "#6b6650", "img": "", "soldOut": false}, {"id": "p8", "name": "Women's Cotton Kurti & Palazzo Set", "category": "Women", "price": 699, "mrp": 1399, "desc": "Straight-cut cotton kurti with flowy palazzo pants for everyday wear.", "sizes": ["S", "M", "L", "XL", "XXL"], "type": "kurtiset", "tone": "#2f6e66", "img": "", "soldOut": false}]}</script>
+<script type="application/json" id="tpl">"\u003ctitle>Rudra Fashion\u003c/title>\n\u003cmeta name=\"claude:viewport-fit-sides\" content=\"cover\">\n\u003clink rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n\u003clink rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n\u003clink href=\"https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">\n\u003cstyle>\n  /* Layout: sticky bar, editorial hero with category arches, product grid, cart drawer ending in a WhatsApp order. Owners get a Manage shop sheet to add products and photos. */\n  :root {\n    --bg: #100e0c;\n    --surface: #1a1714;\n    --surface-2: #26211c;\n    --line: #362f28;\n    --fg: #f3ece1;\n    --muted: #a99f90;\n    --brass: #c9a25f;\n    --brass-ink: #1a1308;\n    --wa: #25a35a;\n    --wa-ink: #ffffff;\n    --danger: #ea7d6b;\n    --display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;\n    --body: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;\n    color-scheme: dark;\n  }\n  @media (prefers-color-scheme: light) {\n    :root:not([data-theme=\"dark\"]) {\n      --bg: #f6f1e8;\n      --surface: #fffdf8;\n      --surface-2: #ece4d4;\n      --line: #d9ceb9;\n      --fg: #1e1a15;\n      --muted: #6c624f;\n      --brass: #8a6528;\n      --brass-ink: #fff9ec;\n      --wa: #178a47;\n      --danger: #b23b29;\n      color-scheme: light;\n    }\n  }\n  :root[data-theme=\"light\"] {\n    --bg: #f6f1e8;\n    --surface: #fffdf8;\n    --surface-2: #ece4d4;\n    --line: #d9ceb9;\n    --fg: #1e1a15;\n    --muted: #6c624f;\n    --brass: #8a6528;\n    --brass-ink: #fff9ec;\n    --wa: #178a47;\n    --danger: #b23b29;\n    color-scheme: light;\n  }\n\n  *, *::before, *::after { box-sizing: border-box; }\n  html { scroll-padding-top: 76px; }\n  body {\n    margin: 0;\n    background: var(--bg);\n    color: var(--fg);\n    font: 400 15px/1.6 var(--body);\n    -webkit-font-smoothing: antialiased;\n    overflow-x: hidden;\n  }\n  body::before {\n    content: \"\"; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);\n    z-index: 30; background: var(--bg);\n  }\n  button, input, select, textarea { font: inherit; color: inherit; }\n  button { cursor: pointer; }\n  h1, h2, h3, h4, p, dl, dd { margin: 0; }\n  :focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }\n\n  .wrap {\n    width: 100%; max-width: 1180px; margin-inline: auto;\n    padding-left: max(16px, env(safe-area-inset-left, 0px));\n    padding-right: max(16px, env(safe-area-inset-right, 0px));\n  }\n\n  .topbar { background: var(--brass); color: var(--brass-ink); font-size: 12px; font-weight: 700; letter-spacing: .05em; text-align: center; padding-block: 8px; }\n\n  header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }\n  .head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; }\n  .brand { font-family: var(--display); font-size: 27px; font-weight: 700; letter-spacing: .14em; white-space: nowrap; }\n  .brand span { color: var(--brass); }\n  .nav { display: flex; gap: 4px; }\n  .nav button { background: none; border: 0; padding: 8px 14px; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border-radius: 999px; }\n  .nav button:hover { color: var(--fg); }\n  .bag { display: inline-flex; align-items: center; gap: 8px; background: var(--brass); color: var(--brass-ink); border: 0; border-radius: 999px; padding: 9px 16px; font-size: 13px; font-weight: 700; }\n  .bag b { background: var(--brass-ink); color: var(--brass); min-width: 22px; height: 22px; display: inline-grid; place-items: center; border-radius: 999px; font-size: 11px; padding-inline: 6px; font-variant-numeric: tabular-nums; }\n  .bag.bump { animation: bump .35s ease; }\n  @keyframes bump { 40% { transform: scale(1.08); } }\n\n  .hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; padding-block: 52px 36px; }\n  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--brass); margin-bottom: 18px; }\n  .hero h1 { font-family: var(--display); font-weight: 600; font-size: clamp(2.7rem, 6.6vw, 4.9rem); line-height: .98; letter-spacing: -.01em; text-wrap: balance; }\n  .hero h1 em { color: var(--brass); font-style: italic; }\n  .hero .lede { margin-top: 20px; max-width: 46ch; color: var(--muted); font-size: 16px; }\n  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }\n  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 24px; border-radius: 999px; border: 1px solid transparent; font-size: 14px; font-weight: 700; text-decoration: none; }\n  .btn.small { min-height: 38px; padding: 0 16px; font-size: 13px; }\n  .btn-primary { background: var(--brass); color: var(--brass-ink); }\n  .btn-primary:hover { filter: brightness(1.08); }\n  .btn-primary:disabled { opacity: .55; cursor: wait; }\n  .btn-ghost { border-color: var(--line); color: var(--fg); background: transparent; }\n  .btn-ghost:hover { border-color: var(--brass); }\n\n  .arches { display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); gap: 12px; align-items: end; }\n  .arch { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; aspect-ratio: 3 / 5; padding: 0 6px 14px; border: 1px solid var(--line); border-radius: 999px 999px 16px 16px; background: linear-gradient(180deg, var(--surface-2), var(--surface)); overflow: hidden; text-align: center; transition: border-color .2s, transform .25s; }\n  .arch:nth-child(2) { aspect-ratio: 3 / 5.7; }\n  .arch:hover { border-color: var(--brass); transform: translateY(-4px); }\n  .arch .garment { width: 82%; max-height: 72%; }\n  .arch .ph { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }\n  .arch.has-photo::after { content: \"\"; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.75)); }\n  .arch.has-photo .arch-label { position: relative; z-index: 1; color: #fff; }\n  .arch.has-photo .arch-label small { color: rgba(255,255,255,.8); }\n  .arch-label { display: grid; gap: 0; margin-top: 8px; }\n  .arch-label b { font-family: var(--display); font-size: 22px; font-weight: 700; line-height: 1.1; }\n  .arch-label small { font-size: 11px; color: var(--muted); letter-spacing: .04em; }\n\n  .garment { display: block; filter: drop-shadow(0 10px 14px rgba(0,0,0,.28)); }\n  .garment .g { fill: var(--tone); }\n  .garment .shade { fill: url(#shade); }\n  .garment .ln { fill: none; stroke: rgba(0,0,0,.3); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }\n\n  .trust { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid var(--line); margin-top: 20px; }\n  .trust > div { padding: 18px 16px; border-left: 1px solid var(--line); }\n  .trust > div:first-child { border-left: 0; padding-left: 0; }\n  .trust b { display: block; font-size: 13px; font-weight: 700; }\n  .trust span { font-size: 12.5px; color: var(--muted); }\n\n  .shop { padding-top: 56px; }\n  .shop-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; }\n  .shop h2, .why h2 { font-family: var(--display); font-weight: 600; font-size: clamp(2rem, 4.6vw, 3rem); line-height: 1.05; text-wrap: balance; }\n  .search { width: 100%; max-width: 320px; height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); outline: none; font-size: 14px; }\n  .search::placeholder { color: var(--muted); }\n  .search:focus { border-color: var(--brass); }\n  .chips { display: flex; gap: 8px; margin-top: 18px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }\n  .chip { flex: none; background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 8px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }\n  .chip small { margin-left: 6px; font-variant-numeric: tabular-nums; opacity: .75; }\n  .chip:hover { color: var(--fg); border-color: var(--brass); }\n  .chip[aria-pressed=\"true\"] { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); }\n\n  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 24px; }\n  .card { display: flex; flex-direction: column; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; transition: border-color .2s, transform .25s; }\n  .card:hover { border-color: var(--brass); transform: translateY(-3px); }\n  .art { position: relative; aspect-ratio: 4 / 5; display: grid; place-items: center; background: radial-gradient(120% 90% at 50% 20%, var(--surface-2), var(--surface)); overflow: hidden; }\n  .art .garment { width: 68%; transition: transform .4s; }\n  .card:hover .art .garment { transform: scale(1.04); }\n  .art img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }\n  .is-sold .art img, .is-sold .art .garment { opacity: .45; }\n  .off, .sold { position: absolute; top: 12px; left: 12px; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 6px; letter-spacing: .02em; }\n  .off { background: var(--brass); color: var(--brass-ink); }\n  .sold { background: var(--fg); color: var(--bg); }\n  .tag { position: absolute; top: 12px; right: 12px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; letter-spacing: .08em; text-transform: uppercase; }\n  .body { display: flex; flex-direction: column; flex: 1; padding: 16px; }\n  .name { font-size: 15px; font-weight: 700; line-height: 1.35; }\n  .desc { margin-top: 4px; color: var(--muted); font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }\n  .sizes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }\n  .size { min-width: 36px; height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: transparent; font-size: 12px; font-weight: 700; color: var(--muted); }\n  .size:hover { border-color: var(--brass); color: var(--fg); }\n  .size[aria-pressed=\"true\"] { background: var(--fg); border-color: var(--fg); color: var(--bg); }\n  .price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-top: auto; padding-top: 16px; }\n  .price b { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }\n  .price s { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }\n  .price em { margin-left: auto; font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: .1em; color: var(--brass); }\n  .add { margin-top: 12px; width: 100%; min-height: 44px; border: 0; border-radius: 10px; background: var(--brass); color: var(--brass-ink); font-size: 13.5px; font-weight: 700; }\n  .add:hover { filter: brightness(1.08); }\n  .add:disabled { background: var(--surface-2); color: var(--muted); cursor: not-allowed; filter: none; }\n  .empty { grid-column: 1 / -1; padding: 56px 16px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 16px; }\n\n  .why { display: grid; grid-template-columns: 1fr 1.35fr; gap: 56px; padding-block: 72px 56px; }\n  .why p { margin-top: 16px; color: var(--muted); max-width: 40ch; }\n  .specs { border-bottom: 1px solid var(--line); }\n  .specs div { display: grid; grid-template-columns: 120px 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }\n  .specs dt { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--brass); padding-top: 2px; }\n  .specs dd { min-width: 0; }\n\n  footer { border-top: 1px solid var(--line); padding-block: 28px 36px; }\n  .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; font-size: 13px; color: var(--muted); }\n  .foot a { color: var(--brass); font-weight: 700; text-decoration: none; }\n  .foot a:hover { text-decoration: underline; }\n\n  .overlay { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.6); opacity: 0; pointer-events: none; transition: opacity .25s; }\n  .overlay.open { opacity: 1; pointer-events: auto; }\n  .drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 100; width: min(440px, 100%); display: flex; flex-direction: column; background: var(--bg); border-left: 1px solid var(--line); transform: translateX(100%); visibility: hidden; transition: transform .3s ease, visibility 0s .3s; }\n  .drawer.open { transform: none; visibility: visible; transition: transform .3s ease; }\n  .d-head { display: flex; align-items: center; justify-content: space-between; padding: calc(14px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px 20px; border-bottom: 1px solid var(--line); }\n  .d-head h3 { font-family: var(--display); font-size: 26px; font-weight: 700; }\n  .x { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 16px; line-height: 1; }\n  .x:hover { border-color: var(--brass); }\n  .d-body { flex: 1; overflow-y: auto; padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px 20px; }\n  .ship { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }\n  .ship i { display: block; height: 4px; border-radius: 4px; background: var(--surface-2); margin-top: 8px; overflow: hidden; }\n  .ship i::after { content: \"\"; display: block; height: 100%; width: var(--p, 0%); background: var(--brass); transition: width .3s; }\n  .line { display: grid; grid-template-columns: 54px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }\n  .thumb { width: 54px; height: 64px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; }\n  .thumb .garment { width: 74%; filter: none; }\n  .thumb img { width: 100%; height: 100%; object-fit: cover; }\n  .line b { display: block; font-size: 13px; line-height: 1.35; }\n  .line small { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }\n  .qty { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; }\n  .qty button { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--line); background: transparent; font-size: 14px; line-height: 1; }\n  .qty button:hover { border-color: var(--brass); }\n  .qty span { min-width: 22px; text-align: center; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }\n  .rm { background: none; border: 0; color: var(--muted); font-size: 12px; text-decoration: underline; padding: 4px; align-self: start; }\n  .cart-empty { padding: 36px 8px; text-align: center; color: var(--muted); }\n\n  .form { margin-top: 20px; display: grid; gap: 14px; }\n  .field label { display: block; margin-bottom: 5px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }\n  .field input, .field select, .field textarea { width: 100%; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); outline: none; font-size: 14px; }\n  .field input, .field select { height: 46px; }\n  .field textarea { padding: 12px 14px; resize: vertical; min-height: 84px; }\n  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--brass); }\n  .field.bad input { border-color: var(--danger); }\n  .err { margin-top: 4px; font-size: 12px; color: var(--danger); }\n  .upi { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); font-size: 12.5px; }\n  .upi code { font: 700 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; user-select: all; word-break: break-all; }\n  .upi button { margin-left: auto; border: 0; border-radius: 6px; padding: 5px 12px; background: var(--brass); color: var(--brass-ink); font-size: 12px; font-weight: 700; }\n  .upi p { flex-basis: 100%; color: var(--muted); }\n\n  .d-foot { padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) 20px; border-top: 1px solid var(--line); background: var(--bg); }\n  .sum { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }\n  .sum.total { margin-top: 6px; color: var(--fg); font-size: 18px; font-weight: 800; }\n  .wa { margin-top: 12px; width: 100%; min-height: 50px; border: 0; border-radius: 12px; background: var(--wa); color: var(--wa-ink); font-size: 15px; font-weight: 700; }\n  .wa:hover { filter: brightness(1.08); }\n  .wa:disabled { opacity: .5; cursor: not-allowed; }\n  .done { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--wa); border-radius: 10px; font-size: 13px; }\n  .done a { color: var(--wa); font-weight: 700; }\n\n  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 130; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: var(--fg); color: var(--bg); padding: 11px 20px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: opacity .25s, transform .25s; max-width: calc(100% - 32px); text-align: center; }\n  .toast.show { opacity: 1; transform: translate(-50%, 0); }\n\n  /* Owner tools */\n  .manage { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: inline-flex; align-items: center; gap: 8px; background: var(--fg); color: var(--bg); border: 0; border-radius: 999px; padding: 12px 18px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 24px rgba(0,0,0,.35); }\n  .sheet { position: fixed; inset: 0; z-index: 110; display: flex; flex-direction: column; background: var(--bg); }\n  .s-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }\n  .s-head h3 { font-family: var(--display); font-size: 26px; font-weight: 700; }\n  .s-body { flex: 1; overflow-y: auto; }\n  .s-in { width: 100%; max-width: 640px; margin-inline: auto; padding: 18px max(16px, env(safe-area-inset-right, 0px)) calc(32px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }\n  .hint { color: var(--muted); font-size: 12.5px; }\n  .a-title { font-family: var(--display); font-size: 28px; font-weight: 700; margin-bottom: 16px; }\n  .prow { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }\n  .pthumb { width: 56px; height: 70px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; }\n  .pthumb img { width: 100%; height: 100%; object-fit: cover; }\n  .pthumb .garment { width: 74%; filter: none; }\n  .pinfo { min-width: 0; }\n  .pinfo b { display: block; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }\n  .pinfo small { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }\n  .pbtns { display: flex; gap: 6px; }\n  .mini { min-height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line); background: transparent; font-size: 12.5px; font-weight: 700; }\n  .mini:hover { border-color: var(--brass); }\n  .mini.armed, .linkdel.armed { border-color: var(--danger); color: var(--danger); }\n  .aform { display: grid; gap: 16px; }\n  .aform .sizes { margin-top: 0; }\n  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }\n  .photo-row { display: flex; gap: 16px; align-items: flex-start; }\n  .ph-box { flex: none; width: 128px; aspect-ratio: 4 / 5; border-radius: 12px; border: 1px dashed var(--line); background: var(--surface-2); display: grid; place-items: center; overflow: hidden; text-align: center; color: var(--muted); font-size: 12px; padding: 6px; }\n  .ph-box img { width: 100%; height: 100%; object-fit: cover; margin: -6px; max-width: none; }\n  .ph-box .garment { width: 70%; filter: none; }\n  .ph-side { display: grid; gap: 8px; justify-items: start; min-width: 0; }\n  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }\n  .seg button { min-height: 44px; border-radius: 10px; border: 1px solid var(--line); background: transparent; font-weight: 700; font-size: 14px; color: var(--muted); }\n  .seg button[aria-pressed=\"true\"] { background: var(--brass); border-color: var(--brass); color: var(--brass-ink); }\n  .add-size { display: flex; gap: 8px; margin-top: 10px; }\n  .add-size input { flex: 1; min-width: 0; }\n  .check { display: flex; align-items: center; gap: 10px; font-size: 14px; }\n  .check input { width: 20px; height: 20px; accent-color: var(--brass); }\n  .style-box { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }\n  .style-box summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted); }\n  .style-box .field { margin-top: 14px; }\n  .swatches { display: flex; flex-wrap: wrap; gap: 10px; }\n  .swatches button { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); background: var(--sw); padding: 0; }\n  .swatches button[aria-pressed=\"true\"] { border-color: var(--fg); box-shadow: 0 0 0 2px var(--bg) inset; }\n  .a-actions { display: flex; flex-wrap: wrap; gap: 10px; }\n  .a-actions .btn-primary { flex: 1 1 200px; }\n  .linkdel { justify-self: start; background: none; border: 1px solid transparent; border-radius: 8px; padding: 8px 4px; color: var(--muted); font-size: 13px; text-decoration: underline; }\n  #addNew { width: 100%; margin-bottom: 10px; }\n\n  @media (max-width: 860px) {\n    .hero { grid-template-columns: 1fr; gap: 36px; padding-top: 36px; }\n    .why { grid-template-columns: 1fr; gap: 28px; padding-top: 52px; }\n    .trust { grid-template-columns: repeat(2, 1fr); }\n    .trust > div:nth-child(3) { border-left: 0; padding-left: 0; }\n    .trust > div:nth-child(n+3) { border-top: 1px solid var(--line); }\n  }\n  @media (max-width: 640px) {\n    .nav { display: none; }\n    .brand { font-size: 23px; }\n    .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }\n    .body { padding: 12px; }\n    .name { font-size: 13.5px; }\n    .price b { font-size: 17px; }\n    .price em { display: none; }\n    .size { min-width: 32px; height: 30px; padding: 0 8px; }\n    .specs div { grid-template-columns: 1fr; gap: 4px; }\n    .prow { grid-template-columns: 56px 1fr; }\n    .pbtns { grid-column: 2; }\n  }\n  @media (prefers-reduced-motion: reduce) {\n    *, *::before, *::after { transition: none !important; animation: none !important; }\n  }\n\u003c/style>\n\n\u003csvg width=\"0\" height=\"0\" style=\"position:absolute\" aria-hidden=\"true\" focusable=\"false\">\n  \u003cdefs>\n    \u003clinearGradient id=\"shade\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n      \u003cstop offset=\"0\" stop-color=\"#fff\" stop-opacity=\".18\"/>\n      \u003cstop offset=\".55\" stop-color=\"#000\" stop-opacity=\"0\"/>\n      \u003cstop offset=\"1\" stop-color=\"#000\" stop-opacity=\".3\"/>\n    \u003c/linearGradient>\n  \u003c/defs>\n\u003c/svg>\n\n\u003cdiv class=\"topbar\">\u003cdiv class=\"wrap\">Free delivery across India above ₹699 &nbsp;·&nbsp; Cash on delivery available\u003c/div>\u003c/div>\n\n\u003cheader>\n  \u003cdiv class=\"wrap head\">\n    \u003cdiv class=\"brand\">RUDRA \u003cspan>FASHION\u003c/span>\u003c/div>\n    \u003cnav class=\"nav\" aria-label=\"Categories\">\n      \u003cbutton type=\"button\" data-nav=\"Men\">Men\u003c/button>\n      \u003cbutton type=\"button\" data-nav=\"Women\">Women\u003c/button>\n      \u003cbutton type=\"button\" data-nav=\"Kids\">Kids\u003c/button>\n    \u003c/nav>\n    \u003cbutton class=\"bag\" id=\"bagBtn\" type=\"button\" aria-label=\"Open shopping bag\">Bag \u003cb id=\"cartCount\">0\u003c/b>\u003c/button>\n  \u003c/div>\n\u003c/header>\n\n\u003cmain>\n  \u003csection class=\"wrap hero\" aria-labelledby=\"heroTitle\">\n    \u003cdiv>\n      \u003cp class=\"eyebrow\">New season collection 2026\u003c/p>\n      \u003ch1 id=\"heroTitle\">Style for the whole family, \u003cem>delivered to your door.\u003c/em>\u003c/h1>\n      \u003cp class=\"lede\">Premium fabrics and clean fits for men, women and kids, at honest prices, with delivery anywhere in India.\u003c/p>\n      \u003cdiv class=\"cta\">\n        \u003ca class=\"btn btn-primary\" href=\"#shop\" id=\"shopNow\">Shop the collection\u003c/a>\n        \u003ca class=\"btn btn-ghost\" id=\"heroWa\" href=\"#\" target=\"_blank\" rel=\"noopener\">Ask us on WhatsApp\u003c/a>\n      \u003c/div>\n    \u003c/div>\n    \u003cdiv class=\"arches\" id=\"arches\" role=\"group\" aria-label=\"Shop by category\">\u003c/div>\n  \u003c/section>\n\n  \u003cdiv class=\"wrap\">\n    \u003cdiv class=\"trust\">\n      \u003cdiv>\u003cb>Pan-India delivery\u003c/b>\u003cspan>Free above ₹699\u003c/span>\u003c/div>\n      \u003cdiv>\u003cb>Cash on delivery\u003c/b>\u003cspan>Or pay by UPI\u003c/span>\u003c/div>\n      \u003cdiv>\u003cb>7-day exchange\u003c/b>\u003cspan>Easy, no fuss\u003c/span>\u003c/div>\n      \u003cdiv>\u003cb>WhatsApp support\u003c/b>\u003cspan>Sizes, orders, tracking\u003c/span>\u003c/div>\n    \u003c/div>\n  \u003c/div>\n\n  \u003csection class=\"wrap shop\" id=\"shop\" aria-labelledby=\"shopTitle\">\n    \u003cdiv class=\"shop-head\">\n      \u003ch2 id=\"shopTitle\">The collection\u003c/h2>\n      \u003cinput class=\"search\" id=\"searchInput\" type=\"search\" placeholder=\"Search shirt, kurti, kids wear\" aria-label=\"Search outfits\" autocomplete=\"off\">\n    \u003c/div>\n    \u003cdiv class=\"chips\" id=\"chips\" role=\"group\" aria-label=\"Filter by category\">\u003c/div>\n    \u003cdiv class=\"grid\" id=\"productGrid\" aria-live=\"polite\">\u003c/div>\n  \u003c/section>\n\n  \u003c!-- Add real customer reviews here once you have them. -->\n  \u003csection class=\"wrap why\" aria-labelledby=\"whyTitle\">\n    \u003cdiv>\n      \u003ch2 id=\"whyTitle\">Good fabric, fair prices, easy to order.\u003c/h2>\n      \u003cp>Every piece is picked for fabric and fit, so you get showroom quality at prices that make sense.\u003c/p>\n    \u003c/div>\n    \u003cdl class=\"specs\">\n      \u003cdiv>\u003cdt>Fabric\u003c/dt>\u003cdd>240 GSM bio-washed cotton tees, soft rayon kurtis, breathable cotton-linen shirts and fleece for the kids.\u003c/dd>\u003c/div>\n      \u003cdiv>\u003cdt>Delivery\u003c/dt>\u003cdd>Delivered across India. Free above ₹699.\u003c/dd>\u003c/div>\n      \u003cdiv>\u003cdt>Exchange\u003c/dt>\u003cdd>Wrong size? Exchange within 7 days.\u003c/dd>\u003c/div>\n      \u003cdiv>\u003cdt>Payment\u003c/dt>\u003cdd>Cash on delivery, or UPI for faster dispatch.\u003c/dd>\u003c/div>\n      \u003cdiv>\u003cdt>Support\u003c/dt>\u003cdd>Message us on WhatsApp for sizing help, bulk orders and tracking.\u003c/dd>\u003c/div>\n    \u003c/dl>\n  \u003c/section>\n\u003c/main>\n\n\u003cfooter>\n  \u003cdiv class=\"wrap foot\">\n    \u003cspan>\u003cstrong style=\"color:var(--fg)\">RUDRA FASHION\u003c/strong> &nbsp; Men, women and kids clothing\u003c/span>\n    \u003cspan>Bulk orders and support: \u003ca id=\"footWa\" href=\"#\" target=\"_blank\" rel=\"noopener\">WhatsApp +91 92510 73424\u003c/a>\u003c/span>\n  \u003c/div>\n\u003c/footer>\n\n\u003cdiv class=\"overlay\" id=\"overlay\">\u003c/div>\n\u003caside class=\"drawer\" id=\"drawer\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"drawerTitle\">\n  \u003cdiv class=\"d-head\">\n    \u003ch3 id=\"drawerTitle\">Your bag\u003c/h3>\n    \u003cbutton class=\"x\" id=\"closeBtn\" type=\"button\" aria-label=\"Close bag\">✕\u003c/button>\n  \u003c/div>\n  \u003cdiv class=\"d-body\">\n    \u003cdiv class=\"ship\" id=\"ship\">\u003c/div>\n    \u003cdiv id=\"cartItems\">\u003c/div>\n    \u003cform class=\"form\" id=\"orderForm\" novalidate>\n      \u003cdiv class=\"field\" id=\"fName\">\n        \u003clabel for=\"custName\">Full name\u003c/label>\n        \u003cinput id=\"custName\" type=\"text\" autocomplete=\"name\" placeholder=\"Your full name\">\n        \u003cp class=\"err\" hidden>Please enter your name.\u003c/p>\n      \u003c/div>\n      \u003cdiv class=\"field\" id=\"fPhone\">\n        \u003clabel for=\"custPhone\">WhatsApp number\u003c/label>\n        \u003cinput id=\"custPhone\" type=\"tel\" inputmode=\"numeric\" autocomplete=\"tel\" placeholder=\"10-digit mobile number\">\n        \u003cp class=\"err\" hidden>Enter a valid 10-digit mobile number.\u003c/p>\n      \u003c/div>\n      \u003cdiv class=\"field\" id=\"fAddr\">\n        \u003clabel for=\"custAddress\">Delivery address and pincode\u003c/label>\n        \u003cinput id=\"custAddress\" type=\"text\" autocomplete=\"street-address\" placeholder=\"House no, street, city, pincode\">\n        \u003cp class=\"err\" hidden>Please enter your full address with pincode.\u003c/p>\n      \u003c/div>\n      \u003cdiv class=\"field\">\n        \u003clabel for=\"payMode\">Payment\u003c/label>\n        \u003cselect id=\"payMode\">\n          \u003coption value=\"COD\">Cash on delivery\u003c/option>\n          \u003coption value=\"UPI\">UPI (faster dispatch)\u003c/option>\n        \u003c/select>\n      \u003c/div>\n      \u003cdiv class=\"upi\" id=\"upiBox\" hidden>\n        \u003cspan>UPI ID\u003c/span>\u003ccode id=\"upiText\">\u003c/code>\n        \u003cbutton type=\"button\" id=\"copyUpi\">Copy\u003c/button>\n        \u003cp>After paying, send the payment screenshot on WhatsApp.\u003c/p>\n      \u003c/div>\n    \u003c/form>\n  \u003c/div>\n  \u003cdiv class=\"d-foot\">\n    \u003cdiv class=\"sum\">\u003cspan>Subtotal\u003c/span>\u003cspan id=\"subTotal\">₹0\u003c/span>\u003c/div>\n    \u003cdiv class=\"sum\">\u003cspan>Delivery\u003c/span>\u003cspan id=\"delivery\">Free\u003c/span>\u003c/div>\n    \u003cdiv class=\"sum total\">\u003cspan>Total\u003c/span>\u003cspan id=\"cartTotal\">₹0\u003c/span>\u003c/div>\n    \u003cbutton class=\"wa\" id=\"orderBtn\" type=\"button\">Confirm order on WhatsApp\u003c/button>\n    \u003cdiv class=\"done\" id=\"done\" hidden>\n      Your order message is ready. WhatsApp should open in a new tab. If it does not, \u003ca id=\"waLink\" href=\"#\" target=\"_blank\" rel=\"noopener\">open WhatsApp here\u003c/a> and press send.\n    \u003c/div>\n  \u003c/div>\n\u003c/aside>\n\n\u003cdiv class=\"toast\" id=\"toast\" role=\"status\">\u003c/div>\n\n\u003c!-- Owner tools: only shown to people who can edit this page -->\n\u003cbutton class=\"manage\" id=\"manageBtn\" type=\"button\" hidden>Manage shop\u003c/button>\n\u003csection class=\"sheet\" id=\"sheet\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"sheetTitle\" hidden>\n  \u003cdiv class=\"s-head\">\n    \u003ch3 id=\"sheetTitle\">Manage products\u003c/h3>\n    \u003cbutton class=\"x\" id=\"sheetClose\" type=\"button\" aria-label=\"Close\">✕\u003c/button>\n  \u003c/div>\n  \u003cdiv class=\"s-body\" id=\"sheetBody\">\u003cdiv class=\"s-in\">\n    \u003cdiv id=\"listView\">\n      \u003cbutton class=\"btn btn-primary\" id=\"addNew\" type=\"button\">+ Add new product\u003c/button>\n      \u003cp class=\"hint\">New products appear first in the shop. Changes go live as soon as you save.\u003c/p>\n      \u003cdiv id=\"adminList\">\u003c/div>\n    \u003c/div>\n    \u003cform class=\"aform\" id=\"editView\" hidden novalidate>\n      \u003ch4 class=\"a-title\" id=\"editTitle\">New product\u003c/h4>\n      \u003cdiv class=\"field\">\n        \u003clabel>Photo\u003c/label>\n        \u003cdiv class=\"photo-row\">\n          \u003cdiv class=\"ph-box\" id=\"phBox\">\u003c/div>\n          \u003cdiv class=\"ph-side\">\n            \u003clabel class=\"btn btn-ghost small\" for=\"pfPhoto\">Choose photo\u003c/label>\n            \u003cinput id=\"pfPhoto\" type=\"file\" accept=\"image/*\" hidden>\n            \u003cbutton class=\"btn btn-ghost small\" id=\"phRemove\" type=\"button\">Remove photo\u003c/button>\n            \u003cp class=\"hint\">Saved as a portrait picture. Keep the clothes in the middle.\u003c/p>\n          \u003c/div>\n        \u003c/div>\n      \u003c/div>\n      \u003cdiv class=\"field\">\u003clabel for=\"pfName\">Name\u003c/label>\u003cinput id=\"pfName\" type=\"text\" maxlength=\"80\" placeholder=\"e.g. Men's Cotton Polo T-shirt\">\u003c/div>\n      \u003cdiv class=\"field\">\u003clabel>Category\u003c/label>\n        \u003cdiv class=\"seg\" id=\"pfCat\">\n          \u003cbutton type=\"button\" data-pcat=\"Men\" aria-pressed=\"false\">Men\u003c/button>\n          \u003cbutton type=\"button\" data-pcat=\"Women\" aria-pressed=\"false\">Women\u003c/button>\n          \u003cbutton type=\"button\" data-pcat=\"Kids\" aria-pressed=\"false\">Kids\u003c/button>\n        \u003c/div>\n      \u003c/div>\n      \u003cdiv class=\"two\">\n        \u003cdiv class=\"field\">\u003clabel for=\"pfPrice\">Selling price (₹)\u003c/label>\u003cinput id=\"pfPrice\" type=\"number\" inputmode=\"numeric\" min=\"1\" placeholder=\"499\">\u003c/div>\n        \u003cdiv class=\"field\">\u003clabel for=\"pfMrp\">MRP (₹), optional\u003c/label>\u003cinput id=\"pfMrp\" type=\"number\" inputmode=\"numeric\" min=\"1\" placeholder=\"999\">\u003c/div>\n      \u003c/div>\n      \u003cp class=\"hint\" id=\"discHint\">\u003c/p>\n      \u003cdiv class=\"field\">\u003clabel for=\"pfDesc\">Description\u003c/label>\u003ctextarea id=\"pfDesc\" rows=\"3\" maxlength=\"160\" placeholder=\"Fabric, fit, who it is for\">\u003c/textarea>\u003c/div>\n      \u003cdiv class=\"field\">\u003clabel>Sizes available\u003c/label>\n        \u003cdiv class=\"sizes\" id=\"pfSizes\">\u003c/div>\n        \u003cdiv class=\"add-size\">\u003cinput id=\"pfCustom\" type=\"text\" maxlength=\"8\" placeholder=\"Other size, e.g. 28 or Free\">\u003cbutton class=\"mini\" id=\"pfAddSize\" type=\"button\">Add\u003c/button>\u003c/div>\n      \u003c/div>\n      \u003clabel class=\"check\">\u003cinput id=\"pfSold\" type=\"checkbox\"> Mark as sold out\u003c/label>\n      \u003cdetails class=\"style-box\">\n        \u003csummary>Picture style, used only when there is no photo\u003c/summary>\n        \u003cdiv class=\"field\">\u003clabel for=\"pfType\">Clothing shape\u003c/label>\u003cselect id=\"pfType\">\u003c/select>\u003c/div>\n        \u003cdiv class=\"field\">\u003clabel>Colour\u003c/label>\u003cdiv class=\"swatches\" id=\"pfTones\">\u003c/div>\u003c/div>\n      \u003c/details>\n      \u003cp class=\"err\" id=\"pfErr\" hidden>\u003c/p>\n      \u003cdiv class=\"a-actions\">\n        \u003cbutton class=\"btn btn-primary\" id=\"pfSave\" type=\"submit\">Save and publish\u003c/button>\n        \u003cbutton class=\"btn btn-ghost\" id=\"pfCancel\" type=\"button\">Cancel\u003c/button>\n      \u003c/div>\n      \u003cbutton class=\"linkdel\" id=\"pfDelete\" type=\"button\" hidden>Delete this product\u003c/button>\n    \u003c/form>\n  \u003c/div>\u003c/div>\n\u003c/section>\n\n\u003cscript type=\"application/json\" id=\"data\">%%DATA%%\u003c/script>\n\u003cscript type=\"application/json\" id=\"tpl\">%%TEMPLATE%%\u003c/script>\n\u003cscript>\n  // ---- Settings: change these ----\n  const CONFIG = {\n    whatsapp: \"919251073424\",          // country code first, no + sign\n    upi: \"vihanthakur021x@ptyes\",\n    freeDeliveryAbove: 699\n  };\n  // Document shell used when the owner saves a change (the page publishes itself).\n  const RESET = ':root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}';\n\n  const DATA = JSON.parse(document.getElementById(\"data\").textContent);\n  let products = Array.isArray(DATA.products) ? DATA.products : [];\n\n  // ---- Helpers ----\n  const $ = s => document.querySelector(s);\n  const esc = s => String(s == null ? \"\" : s).replace(/[&\u003c>\"']/g, c => ({ \"&\": \"&amp;\", \"\u003c\": \"&lt;\", \">\": \"&gt;\", '\"': \"&quot;\", \"'\": \"&#39;\" }[c]));\n  const okImg = u => typeof u === \"string\" && (u.startsWith(\"data:image/\") || u.startsWith(\"https://\"));\n  const inr = n => \"₹\" + Number(n).toLocaleString(\"en-IN\");\n  const CAT_LABEL = { All: \"All collection\", Men: \"Men's wear\", Women: \"Women's wear\", Kids: \"Kids' wear\" };\n  const state = { cat: \"All\", q: \"\", sel: {}, cart: [] };\n  const reduceMotion = window.matchMedia(\"(prefers-reduced-motion: reduce)\").matches;\n\n  // ---- Garment illustrations (shown when a product has no photo) ----\n  const P = d => `\u003cpath class=\"g\" d=\"${d}\"/>\u003cpath class=\"shade\" d=\"${d}\"/>`;\n  const L = d => `\u003cpath class=\"ln\" d=\"${d}\"/>`;\n  const SHAPES = {\n    tee: P(\"M70 30 L100 42 L130 30 L172 56 L156 92 L138 82 L138 218 L62 218 L62 82 L44 92 L28 56 Z\") + L(\"M82 32 Q100 54 118 32\"),\n    shirt: P(\"M68 32 L100 46 L132 32 L174 58 L166 168 L144 166 L140 92 L140 222 L60 222 L60 92 L56 166 L34 168 L26 58 Z\") + L(\"M100 50 L100 222\") + L(\"M82 33 L100 58 L118 33\") + L(\"M110 90 L128 90 L128 108 L110 108 Z\"),\n    kurti: P(\"M80 24 L100 36 L120 24 L132 84 L172 228 L28 228 L68 84 Z\") + L(\"M82 26 Q100 52 118 26\") + L(\"M68 84 Q100 98 132 84\") + L(\"M100 52 L100 84\"),\n    kurta: P(\"M75 28 L100 40 L125 28 L152 52 L142 84 L132 78 L132 156 L68 156 L68 78 L58 84 L48 52 Z\") + P(\"M70 160 L130 160 L127 236 L106 236 L100 184 L94 236 L73 236 Z\") + L(\"M82 30 Q100 56 118 30\") + L(\"M100 56 L100 156\"),\n    coord: P(\"M72 30 L100 42 L128 30 L152 54 L140 74 L130 68 L130 108 L70 108 L70 68 L60 74 L48 54 Z\") + P(\"M66 114 L134 114 L150 236 L108 236 L100 146 L92 236 L50 236 Z\") + L(\"M82 32 Q100 54 118 32\"),\n    hoodie: P(\"M62 42 Q100 16 138 42 L178 74 L166 168 L146 164 L142 96 L140 218 L60 218 L58 96 L54 164 L34 168 L22 74 Z\") + L(\"M70 44 Q100 80 130 44\") + L(\"M92 72 L90 110\") + L(\"M108 72 L110 110\") + L(\"M74 170 L126 170 L130 200 L70 200 Z\"),\n    cargo: P(\"M60 22 L140 22 L150 236 L108 236 L100 96 L92 236 L50 236 Z\") + L(\"M60 40 L140 40\") + L(\"M62 130 L82 130 L82 162 L58 162\") + L(\"M138 130 L118 130 L118 162 L142 162\"),\n    kurtiset: P(\"M76 26 L100 38 L124 26 L136 62 L132 124 L68 124 L64 62 Z\") + P(\"M68 130 L132 130 L166 236 L108 236 L100 156 L92 236 L34 236 Z\") + L(\"M80 28 Q100 52 120 28\") + L(\"M100 52 L100 90\")\n  };\n  const art = (type, tone) => `\u003csvg class=\"garment\" viewBox=\"0 0 200 250\" style=\"--tone:${esc(tone || \"#7f9480\")}\" aria-hidden=\"true\">${SHAPES[type] || SHAPES.tee}\u003c/svg>`;\n  const photoOrArt = p => okImg(p.img) ? `\u003cimg src=\"${esc(p.img)}\" alt=\"\">` : art(p.type, p.tone);\n\n  try { const saved = JSON.parse(localStorage.getItem(\"rudra-cart-v2\") || \"[]\"); if (Array.isArray(saved)) state.cart = saved.filter(i => products.some(p => p.id === i.id)); } catch (e) {}\n  const saveCart = () => { try { localStorage.setItem(\"rudra-cart-v2\", JSON.stringify(state.cart)); } catch (e) {} };\n\n  let toastTimer;\n  function toast(msg) {\n    const t = $(\"#toast\");\n    t.textContent = msg; t.classList.add(\"show\");\n    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove(\"show\"), 2600);\n  }\n\n  // ---- Arches and chips ----\n  function renderArches() {\n    const cats = [\"Men\", \"Women\", \"Kids\"].filter(c => products.some(p => p.category === c));\n    const el = $(\"#arches\");\n    el.style.setProperty(\"--n\", cats.length || 1);\n    el.innerHTML = cats.map(c => {\n      const list = products.filter(p => p.category === c);\n      const withPhoto = list.find(p => okImg(p.img));\n      const first = list[0], min = Math.min(...list.map(p => p.price));\n      const pic = withPhoto ? `\u003cimg class=\"ph\" src=\"${esc(withPhoto.img)}\" alt=\"\">` : art(first.type, first.tone);\n      return `\u003cbutton class=\"arch${withPhoto ? \" has-photo\" : \"\"}\" type=\"button\" data-cat=\"${c}\" aria-label=\"Shop ${CAT_LABEL[c]}\">${pic}\u003cspan class=\"arch-label\">\u003cb>${c}\u003c/b>\u003csmall>from ${inr(min)}\u003c/small>\u003c/span>\u003c/button>`;\n    }).join(\"\");\n  }\n  function renderChips() {\n    $(\"#chips\").innerHTML = Object.keys(CAT_LABEL).map(c => {\n      const n = c === \"All\" ? products.length : products.filter(p => p.category === c).length;\n      return `\u003cbutton class=\"chip\" type=\"button\" data-cat=\"${c}\" aria-pressed=\"${state.cat === c}\">${CAT_LABEL[c]}\u003csmall>${n}\u003c/small>\u003c/button>`;\n    }).join(\"\");\n  }\n  function setCategory(c, scroll) {\n    state.cat = c; renderChips(); renderProducts();\n    if (scroll) $(\"#shop\").scrollIntoView({ behavior: reduceMotion ? \"auto\" : \"smooth\" });\n  }\n\n  // ---- Products ----\n  function renderProducts() {\n    const words = state.q.trim().toLowerCase().split(/\\s+/).filter(Boolean);\n    const list = products.filter(p => {\n      if (state.cat !== \"All\" && p.category !== state.cat) return false;\n      const hay = (p.name + \" \" + p.desc + \" \" + p.category + \" \" + CAT_LABEL[p.category]).toLowerCase();\n      return words.every(w => hay.includes(w));\n    });\n    $(\"#productGrid\").innerHTML = list.length ? list.map(p => {\n      const hasOff = p.mrp > p.price, off = hasOff ? Math.round((1 - p.price / p.mrp) * 100) : 0;\n      const img = okImg(p.img) ? `\u003cimg src=\"${esc(p.img)}\" alt=\"${esc(p.name)}\" loading=\"lazy\">` : \"\";\n      const sizes = (p.sizes || []).map(s => `\u003cbutton class=\"size\" type=\"button\" data-size=\"${esc(s)}\" data-id=\"${esc(p.id)}\" aria-pressed=\"${state.sel[p.id] === s}\">${esc(s)}\u003c/button>`).join(\"\");\n      return `\u003carticle class=\"card${p.soldOut ? \" is-sold\" : \"\"}\">\n        \u003cdiv class=\"art\">${art(p.type, p.tone)}${img}${p.soldOut ? '\u003cspan class=\"sold\">Sold out\u003c/span>' : hasOff ? `\u003cspan class=\"off\">${off}% OFF\u003c/span>` : \"\"}\u003cspan class=\"tag\">${esc(p.category)}\u003c/span>\u003c/div>\n        \u003cdiv class=\"body\">\n          \u003ch3 class=\"name\">${esc(p.name)}\u003c/h3>\n          \u003cp class=\"desc\">${esc(p.desc)}\u003c/p>\n          \u003cdiv class=\"sizes\" role=\"group\" aria-label=\"Size\">${sizes}\u003c/div>\n          \u003cdiv class=\"price\">\u003cb>${inr(p.price)}\u003c/b>${hasOff ? `\u003cs>${inr(p.mrp)}\u003c/s>` : \"\"}\u003cem>COD\u003c/em>\u003c/div>\n          \u003cbutton class=\"add\" type=\"button\" data-add=\"${esc(p.id)}\"${p.soldOut ? \" disabled\" : \"\"}>${p.soldOut ? \"Sold out\" : \"Add to bag\"}\u003c/button>\n        \u003c/div>\n      \u003c/article>`;\n    }).join(\"\") : `\u003cdiv class=\"empty\">${products.length ? \"No outfits match your search. Try another word or clear the filter.\" : \"New outfits are coming soon. Message us on WhatsApp to ask what is in stock.\"}\u003c/div>`;\n  }\n\n  // ---- Cart ----\n  const cartLines = () => state.cart.map(i => ({ ...i, p: products.find(p => p.id === i.id) })).filter(i => i.p);\n  const subtotal = () => cartLines().reduce((s, i) => s + i.p.price * i.qty, 0);\n\n  function renderCart() {\n    const lines = cartLines(), count = lines.reduce((s, i) => s + i.qty, 0), sub = subtotal();\n    $(\"#cartCount\").textContent = count;\n    $(\"#cartItems\").innerHTML = lines.length ? lines.map((i, idx) => `\n      \u003cdiv class=\"line\">\n        \u003cdiv class=\"thumb\">${photoOrArt(i.p)}\u003c/div>\n        \u003cdiv>\u003cb>${esc(i.p.name)}\u003c/b>\u003csmall>Size ${esc(i.size)} · ${inr(i.p.price)}\u003c/small>\n          \u003cdiv class=\"qty\">\u003cbutton type=\"button\" data-q=\"-1\" data-i=\"${idx}\" aria-label=\"Decrease quantity\">−\u003c/button>\u003cspan>${i.qty}\u003c/span>\u003cbutton type=\"button\" data-q=\"1\" data-i=\"${idx}\" aria-label=\"Increase quantity\">+\u003c/button>\u003c/div>\u003c/div>\n        \u003cbutton class=\"rm\" type=\"button\" data-rm=\"${idx}\">Remove\u003c/button>\n      \u003c/div>`).join(\"\") : `\u003cdiv class=\"cart-empty\">Your bag is empty.\u003cbr>Pick a size and tap Add to bag.\u003c/div>`;\n\n    const left = CONFIG.freeDeliveryAbove - sub;\n    const ship = $(\"#ship\");\n    ship.style.setProperty(\"--p\", Math.min(100, sub / CONFIG.freeDeliveryAbove * 100) + \"%\");\n    ship.innerHTML = sub === 0 ? `Free delivery on orders above ${inr(CONFIG.freeDeliveryAbove)}\u003ci>\u003c/i>`\n      : left > 0 ? `Add ${inr(left)} more for free delivery\u003ci>\u003c/i>` : `You have free delivery on this order\u003ci>\u003c/i>`;\n\n    $(\"#subTotal\").textContent = inr(sub);\n    $(\"#delivery\").textContent = sub >= CONFIG.freeDeliveryAbove ? \"Free\" : \"Confirmed on WhatsApp\";\n    $(\"#cartTotal\").textContent = inr(sub);\n    $(\"#orderBtn\").disabled = lines.length === 0;\n    $(\"#done\").hidden = true;\n    saveCart();\n  }\n\n  function addToCart(id) {\n    const size = state.sel[id];\n    if (!size) { toast(\"Pick a size first\"); return; }\n    const hit = state.cart.find(i => i.id === id && i.size === size);\n    hit ? hit.qty++ : state.cart.push({ id, size, qty: 1 });\n    renderCart(); toast(\"Added to your bag\");\n    const b = $(\"#bagBtn\"); b.classList.remove(\"bump\"); void b.offsetWidth; b.classList.add(\"bump\");\n  }\n\n  function openCart() { $(\"#overlay\").classList.add(\"open\"); $(\"#drawer\").classList.add(\"open\"); $(\"#closeBtn\").focus(); }\n  function closeCart() { $(\"#overlay\").classList.remove(\"open\"); $(\"#drawer\").classList.remove(\"open\"); $(\"#bagBtn\").focus(); }\n\n  // ---- Order on WhatsApp ----\n  function fieldError(id, bad) { const f = $(id); f.classList.toggle(\"bad\", bad); f.querySelector(\".err\").hidden = !bad; return bad; }\n\n  function sendOrder() {\n    const name = $(\"#custName\").value.trim();\n    const phone = $(\"#custPhone\").value.replace(/[\\s-]/g, \"\").replace(/^(\\+91|91|0)(?=\\d{10}$)/, \"\");\n    const addr = $(\"#custAddress\").value.trim();\n    const bad = [fieldError(\"#fName\", name.length \u003c 2), fieldError(\"#fPhone\", !/^[6-9]\\d{9}$/.test(phone)), fieldError(\"#fAddr\", addr.length \u003c 10)];\n    if (bad.some(Boolean)) { document.querySelector(\".field.bad input\")?.focus(); return; }\n\n    const pay = $(\"#payMode\").value === \"UPI\" ? \"UPI (screenshot to follow)\" : \"Cash on delivery\";\n    const rows = cartLines().map((i, n) => `${n + 1}. ${i.p.name} | Size ${i.size} | Qty ${i.qty} | ${inr(i.p.price * i.qty)}`).join(\"\\n\");\n    const msg = `*New order - Rudra Fashion*\\n\\n${rows}\\n\\n*Total: ${inr(subtotal())}*\\nPayment: ${pay}\\n\\nName: ${name}\\nPhone: ${phone}\\nAddress: ${addr}`;\n    const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;\n    $(\"#waLink\").href = url; $(\"#done\").hidden = false;\n    window.open(url, \"_blank\");\n  }\n\n  // ======== Owner tools ========\n  const TYPES = [[\"tee\", \"T-shirt\"], [\"shirt\", \"Shirt\"], [\"kurti\", \"Kurti\"], [\"kurta\", \"Kids kurta set\"], [\"coord\", \"Co-ord set\"], [\"hoodie\", \"Hoodie set\"], [\"cargo\", \"Joggers or pants\"], [\"kurtiset\", \"Kurti with palazzo\"]];\n  const TONES = [\"#d8d0c0\", \"#8c2f45\", \"#c58b2b\", \"#7f9480\", \"#3f5f7d\", \"#b5533a\", \"#6b6650\", \"#2f6e66\", \"#1f1f24\", \"#e8b4b8\"];\n  const SIZE_SETS = { Men: [\"S\", \"M\", \"L\", \"XL\", \"XXL\"], Women: [\"S\", \"M\", \"L\", \"XL\", \"XXL\"], Kids: [\"2-4Y\", \"4-6Y\", \"6-8Y\", \"8-10Y\", \"10-12Y\"] };\n  const A = { cur: null, isNew: false, busy: false, delArm: null, delTimer: 0 };\n\n  function buildDoc(next) {\n    const tpl = JSON.parse(document.getElementById(\"tpl\").textContent);\n    const j = o => JSON.stringify(o).replace(/\u003c/g, \"\\\\u003c\");\n    const content = tpl.replace(/%%(DATA|TEMPLATE)%%/g, (m, k) => k === \"DATA\" ? j({ products: next }) : j(tpl));\n    return '\u003c!doctype html>\u003chtml>\u003chead>\u003cmeta charset=utf8>\u003cmeta name=viewport content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\u003cstyle>' + RESET + \"\u003c/style>\u003c/head>\u003cbody>\" + content + \"\u003c/body>\u003c/html>\";\n  }\n\n  function setBusy(on) {\n    A.busy = on;\n    document.querySelectorAll(\"#sheet button\").forEach(b => { b.disabled = on; });\n    $(\"#pfSave\").textContent = on ? \"Saving...\" : \"Save and publish\";\n  }\n\n  async function persist(next) {\n    if (A.busy) return;\n    setBusy(true);\n    try {\n      const art = await claude.use(\"artifact\");\n      if (!art) throw { code: \"not_granted\" };\n      const html = buildDoc(next);\n      if (html.length > 14e6) throw { code: \"too_large\" };\n      try { sessionStorage.setItem(\"rudra-admin\", \"1\"); } catch (e) {}\n      await art.publish(html);\n    } catch (e) {\n      setBusy(false);\n      try { sessionStorage.removeItem(\"rudra-admin\"); } catch (_) {}\n      const c = e && e.code;\n      toast(c === \"not_writer\" || c === \"not_granted\" ? \"You need edit access to change this shop.\"\n        : c === \"too_large\" ? \"Photos are too big. Remove a photo and try again.\"\n        : c === \"rate_limited\" ? \"Please wait a few seconds and try again.\"\n        : c === \"conflict\" ? \"The shop was updated somewhere else. Reloading.\"\n        : \"Could not save. Check your connection and try again.\");\n    }\n  }\n\n  function showSheet(on) {\n    $(\"#sheet\").hidden = !on;\n    document.body.style.overflow = on ? \"hidden\" : \"\";\n    if (on) showList(); else $(\"#manageBtn\").focus();\n  }\n  function showList() {\n    A.cur = null; A.delArm = null;\n    $(\"#listView\").hidden = false; $(\"#editView\").hidden = true;\n    $(\"#sheetTitle\").textContent = \"Manage products\";\n    renderAdminList(); $(\"#sheetBody\").scrollTop = 0;\n  }\n  function renderAdminList() {\n    $(\"#adminList\").innerHTML = products.length ? products.map(p => `\n      \u003cdiv class=\"prow\">\n        \u003cdiv class=\"pthumb\">${photoOrArt(p)}\u003c/div>\n        \u003cdiv class=\"pinfo\">\u003cb>${esc(p.name)}\u003c/b>\u003csmall>${esc(p.category)} · ${inr(p.price)}${p.soldOut ? \" · Sold out\" : \"\"}\u003c/small>\u003c/div>\n        \u003cdiv class=\"pbtns\">\n          \u003cbutton class=\"mini\" type=\"button\" data-edit=\"${esc(p.id)}\">Edit\u003c/button>\n          \u003cbutton class=\"mini${A.delArm === p.id ? \" armed\" : \"\"}\" type=\"button\" data-del=\"${esc(p.id)}\">${A.delArm === p.id ? \"Tap again to delete\" : \"Delete\"}\u003c/button>\n        \u003c/div>\n      \u003c/div>`).join(\"\") : '\u003cp class=\"hint\" style=\"margin-top:16px\">No products yet. Tap Add new product to start.\u003c/p>';\n  }\n\n  function openEdit(p) {\n    A.isNew = !p; A.delArm = null;\n    const base = p || { id: \"n\" + Date.now().toString(36), name: \"\", category: \"Men\", price: \"\", mrp: \"\", desc: \"\", sizes: [], type: \"tee\", tone: TONES[0], img: \"\", soldOut: false };\n    A.cur = { ...base, sizes: [...(base.sizes || [])] };\n    $(\"#pfName\").value = base.name; $(\"#pfPrice\").value = base.price; $(\"#pfMrp\").value = base.mrp || \"\";\n    $(\"#pfDesc\").value = base.desc; $(\"#pfSold\").checked = !!base.soldOut; $(\"#pfCustom\").value = \"\";\n    $(\"#pfType\").innerHTML = TYPES.map(([v, l]) => `\u003coption value=\"${v}\"${v === A.cur.type ? \" selected\" : \"\"}>${l}\u003c/option>`).join(\"\");\n    $(\"#pfErr\").hidden = true; $(\"#pfDelete\").hidden = !p; $(\"#pfDelete\").textContent = \"Delete this product\"; $(\"#pfDelete\").classList.remove(\"armed\");\n    $(\"#editTitle\").textContent = p ? \"Edit product\" : \"New product\";\n    $(\"#sheetTitle\").textContent = p ? \"Edit product\" : \"Add product\";\n    renderCatSeg(); renderSizes(); renderTones(); renderPhoto(); renderDisc();\n    $(\"#listView\").hidden = true; $(\"#editView\").hidden = false; $(\"#sheetBody\").scrollTop = 0;\n  }\n  function renderCatSeg() { document.querySelectorAll(\"#pfCat button\").forEach(b => b.setAttribute(\"aria-pressed\", b.dataset.pcat === A.cur.category)); }\n  function renderSizes() {\n    const all = [...new Set([...SIZE_SETS[A.cur.category], ...A.cur.sizes])];\n    $(\"#pfSizes\").innerHTML = all.map(s => `\u003cbutton class=\"size\" type=\"button\" data-psize=\"${esc(s)}\" aria-pressed=\"${A.cur.sizes.includes(s)}\">${esc(s)}\u003c/button>`).join(\"\");\n  }\n  function renderTones() {\n    $(\"#pfTones\").innerHTML = TONES.map(t => `\u003cbutton type=\"button\" style=\"--sw:${t}\" data-tone=\"${t}\" aria-label=\"Colour ${t}\" aria-pressed=\"${A.cur.tone === t}\">\u003c/button>`).join(\"\");\n  }\n  function renderPhoto() {\n    $(\"#phBox\").innerHTML = okImg(A.cur.img) ? `\u003cimg src=\"${esc(A.cur.img)}\" alt=\"Product photo\">` : \"No photo yet\";\n    $(\"#phRemove\").hidden = !okImg(A.cur.img);\n  }\n  function renderDisc() {\n    const price = Number($(\"#pfPrice\").value), mrp = Number($(\"#pfMrp\").value);\n    $(\"#discHint\").textContent = mrp > price && price > 0 ? `Customers will see ${Math.round((1 - price / mrp) * 100)}% OFF.` : \"No discount badge. Add an MRP higher than the price to show one.\";\n  }\n\n  async function fileToJpeg(file) {\n    const url = URL.createObjectURL(file);\n    try {\n      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });\n      const W = 720, H = 900, c = document.createElement(\"canvas\"); c.width = W; c.height = H;\n      const x = c.getContext(\"2d\"); x.fillStyle = \"#fff\"; x.fillRect(0, 0, W, H);\n      const s = Math.max(W / img.naturalWidth, H / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;\n      x.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);\n      return c.toDataURL(\"image/jpeg\", 0.8);\n    } finally { URL.revokeObjectURL(url); }\n  }\n\n  function saveProduct() {\n    const name = $(\"#pfName\").value.trim();\n    const price = Math.round(Number($(\"#pfPrice\").value));\n    const mrp = Math.round(Number($(\"#pfMrp\").value)) || 0;\n    const fail = m => { const e = $(\"#pfErr\"); e.textContent = m; e.hidden = false; e.scrollIntoView({ block: \"center\" }); };\n    if (name.length \u003c 2) return fail(\"Enter the product name.\");\n    if (!(price > 0)) return fail(\"Enter the selling price.\");\n    if (!A.cur.sizes.length) return fail(\"Select at least one size.\");\n    const order = [...new Set([...SIZE_SETS[A.cur.category], ...A.cur.sizes])];\n    const p = {\n      id: A.cur.id, name, category: A.cur.category, price, mrp,\n      desc: $(\"#pfDesc\").value.trim(), sizes: order.filter(s => A.cur.sizes.includes(s)),\n      type: $(\"#pfType\").value, tone: A.cur.tone, img: A.cur.img || \"\", soldOut: $(\"#pfSold\").checked\n    };\n    persist(A.isNew ? [p, ...products] : products.map(x => x.id === p.id ? p : x));\n  }\n  function deleteProduct(id) { persist(products.filter(p => p.id !== id)); }\n\n  function armDelete(id, rerender) {\n    if (A.delArm === id) { deleteProduct(id); return; }\n    A.delArm = id; clearTimeout(A.delTimer);\n    A.delTimer = setTimeout(() => { A.delArm = null; rerender(); }, 4000);\n    rerender();\n  }\n\n  async function initAdmin() {\n    try {\n      if (!window.claude || !window.claude.use) return;\n      const user = await claude.use(\"user\");\n      const can = user ? await user.canEdit() : false;\n      if (!can) return;\n      const art = await claude.use(\"artifact\");\n      if (!art) return;\n      $(\"#manageBtn\").hidden = false;\n      let reopen = false;\n      try { reopen = sessionStorage.getItem(\"rudra-admin\") === \"1\"; sessionStorage.removeItem(\"rudra-admin\"); } catch (e) {}\n      if (reopen) { showSheet(true); toast(\"Saved. Your shop is updated.\"); }\n    } catch (e) {}\n  }\n\n  // ---- Events ----\n  document.addEventListener(\"click\", e => {\n    const t = e.target.closest(\"button, a\");\n    if (!t) return;\n    if (t.dataset.cat) setCategory(t.dataset.cat, t.classList.contains(\"arch\"));\n    else if (t.dataset.nav) setCategory(t.dataset.nav, true);\n    else if (t.dataset.size) {\n      state.sel[t.dataset.id] = t.dataset.size;\n      t.parentElement.querySelectorAll(\".size\").forEach(b => b.setAttribute(\"aria-pressed\", b === t));\n    }\n    else if (t.dataset.add) addToCart(t.dataset.add);\n    else if (t.dataset.q) {\n      const item = state.cart[+t.dataset.i]; item.qty += +t.dataset.q;\n      if (item.qty \u003c 1) state.cart.splice(+t.dataset.i, 1);\n      renderCart();\n    }\n    else if (t.dataset.rm) { state.cart.splice(+t.dataset.rm, 1); renderCart(); }\n    // owner tools\n    else if (t.dataset.edit) openEdit(products.find(p => p.id === t.dataset.edit));\n    else if (t.dataset.del) armDelete(t.dataset.del, renderAdminList);\n    else if (t.dataset.pcat) {\n      if ((t.dataset.pcat === \"Kids\") !== (A.cur.category === \"Kids\")) A.cur.sizes = [];\n      A.cur.category = t.dataset.pcat; renderCatSeg(); renderSizes();\n    }\n    else if (t.dataset.psize) {\n      const s = t.dataset.psize, i = A.cur.sizes.indexOf(s);\n      i >= 0 ? A.cur.sizes.splice(i, 1) : A.cur.sizes.push(s); renderSizes();\n    }\n    else if (t.dataset.tone) { A.cur.tone = t.dataset.tone; renderTones(); }\n  });\n  $(\"#shopNow\").addEventListener(\"click\", e => { e.preventDefault(); $(\"#shop\").scrollIntoView({ behavior: reduceMotion ? \"auto\" : \"smooth\" }); });\n  $(\"#searchInput\").addEventListener(\"input\", e => { state.q = e.target.value; renderProducts(); });\n  $(\"#bagBtn\").addEventListener(\"click\", openCart);\n  $(\"#closeBtn\").addEventListener(\"click\", closeCart);\n  $(\"#overlay\").addEventListener(\"click\", closeCart);\n  document.addEventListener(\"keydown\", e => {\n    if (e.key !== \"Escape\") return;\n    if (!$(\"#sheet\").hidden && !A.busy) showSheet(false);\n    else if ($(\"#drawer\").classList.contains(\"open\")) closeCart();\n  });\n  $(\"#payMode\").addEventListener(\"change\", e => { $(\"#upiBox\").hidden = e.target.value !== \"UPI\"; });\n  $(\"#orderBtn\").addEventListener(\"click\", sendOrder);\n  $(\"#copyUpi\").addEventListener(\"click\", () => {\n    const done = () => toast(\"UPI ID copied\");\n    const fail = () => { const r = document.createRange(); r.selectNodeContents($(\"#upiText\")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast(\"Press and hold to copy\"); };\n    navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(CONFIG.upi).then(done, fail) : fail();\n  });\n\n  $(\"#manageBtn\").addEventListener(\"click\", () => showSheet(true));\n  $(\"#sheetClose\").addEventListener(\"click\", () => showSheet(false));\n  $(\"#addNew\").addEventListener(\"click\", () => openEdit(null));\n  $(\"#pfCancel\").addEventListener(\"click\", showList);\n  $(\"#editView\").addEventListener(\"submit\", e => { e.preventDefault(); saveProduct(); });\n  $(\"#pfPrice\").addEventListener(\"input\", renderDisc);\n  $(\"#pfMrp\").addEventListener(\"input\", renderDisc);\n  $(\"#pfAddSize\").addEventListener(\"click\", () => {\n    const s = $(\"#pfCustom\").value.trim();\n    if (!s) return;\n    if (!A.cur.sizes.includes(s)) A.cur.sizes.push(s);\n    $(\"#pfCustom\").value = \"\"; renderSizes();\n  });\n  $(\"#pfCustom\").addEventListener(\"keydown\", e => { if (e.key === \"Enter\") { e.preventDefault(); $(\"#pfAddSize\").click(); } });\n  $(\"#phRemove\").addEventListener(\"click\", () => { A.cur.img = \"\"; renderPhoto(); });\n  $(\"#pfPhoto\").addEventListener(\"change\", async e => {\n    const f = e.target.files && e.target.files[0]; e.target.value = \"\";\n    if (!f) return;\n    try { A.cur.img = await fileToJpeg(f); renderPhoto(); }\n    catch (err) { toast(\"Could not read that photo. Try a JPG or PNG.\"); }\n  });\n  $(\"#pfDelete\").addEventListener(\"click\", () => {\n    const b = $(\"#pfDelete\");\n    if (b.classList.contains(\"armed\")) { deleteProduct(A.cur.id); return; }\n    b.classList.add(\"armed\"); b.textContent = \"Tap again to delete\";\n    setTimeout(() => { b.classList.remove(\"armed\"); b.textContent = \"Delete this product\"; }, 4000);\n  });\n\n  // ---- Start ----\n  const waBase = `https://wa.me/${CONFIG.whatsapp}`;\n  $(\"#heroWa\").href = waBase + \"?text=\" + encodeURIComponent(\"Hi Rudra Fashion, I need help choosing an outfit.\");\n  $(\"#footWa\").href = waBase;\n  $(\"#upiText\").textContent = CONFIG.upi;\n  renderArches(); renderChips(); renderProducts(); renderCart();\n  initAdmin();\n\u003c/script>\n"</script>
+<script>
+  // ---- Settings: change these ----
+  const CONFIG = {
+    whatsapp: "919251073424",          // country code first, no + sign
+    upi: "vihanthakur021x@ptyes",
+    freeDeliveryAbove: 699
+  };
+  // Document shell used when the owner saves a change (the page publishes itself).
+  const RESET = ':root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}';
+
+  const DATA = JSON.parse(document.getElementById("data").textContent);
+  let products = Array.isArray(DATA.products) ? DATA.products : [];
+
+  // ---- Helpers ----
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const okImg = u => typeof u === "string" && (u.startsWith("data:image/") || u.startsWith("https://"));
+  const inr = n => "₹" + Number(n).toLocaleString("en-IN");
+  const CAT_LABEL = { All: "All collection", Men: "Men's wear", Women: "Women's wear", Kids: "Kids' wear" };
+  const state = { cat: "All", q: "", sel: {}, cart: [] };
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---- Garment illustrations (shown when a product has no photo) ----
+  const P = d => `<path class="g" d="${d}"/><path class="shade" d="${d}"/>`;
+  const L = d => `<path class="ln" d="${d}"/>`;
+  const SHAPES = {
+    tee: P("M70 30 L100 42 L130 30 L172 56 L156 92 L138 82 L138 218 L62 218 L62 82 L44 92 L28 56 Z") + L("M82 32 Q100 54 118 32"),
+    shirt: P("M68 32 L100 46 L132 32 L174 58 L166 168 L144 166 L140 92 L140 222 L60 222 L60 92 L56 166 L34 168 L26 58 Z") + L("M100 50 L100 222") + L("M82 33 L100 58 L118 33") + L("M110 90 L128 90 L128 108 L110 108 Z"),
+    kurti: P("M80 24 L100 36 L120 24 L132 84 L172 228 L28 228 L68 84 Z") + L("M82 26 Q100 52 118 26") + L("M68 84 Q100 98 132 84") + L("M100 52 L100 84"),
+    kurta: P("M75 28 L100 40 L125 28 L152 52 L142 84 L132 78 L132 156 L68 156 L68 78 L58 84 L48 52 Z") + P("M70 160 L130 160 L127 236 L106 236 L100 184 L94 236 L73 236 Z") + L("M82 30 Q100 56 118 30") + L("M100 56 L100 156"),
+    coord: P("M72 30 L100 42 L128 30 L152 54 L140 74 L130 68 L130 108 L70 108 L70 68 L60 74 L48 54 Z") + P("M66 114 L134 114 L150 236 L108 236 L100 146 L92 236 L50 236 Z") + L("M82 32 Q100 54 118 32"),
+    hoodie: P("M62 42 Q100 16 138 42 L178 74 L166 168 L146 164 L142 96 L140 218 L60 218 L58 96 L54 164 L34 168 L22 74 Z") + L("M70 44 Q100 80 130 44") + L("M92 72 L90 110") + L("M108 72 L110 110") + L("M74 170 L126 170 L130 200 L70 200 Z"),
+    cargo: P("M60 22 L140 22 L150 236 L108 236 L100 96 L92 236 L50 236 Z") + L("M60 40 L140 40") + L("M62 130 L82 130 L82 162 L58 162") + L("M138 130 L118 130 L118 162 L142 162"),
+    kurtiset: P("M76 26 L100 38 L124 26 L136 62 L132 124 L68 124 L64 62 Z") + P("M68 130 L132 130 L166 236 L108 236 L100 156 L92 236 L34 236 Z") + L("M80 28 Q100 52 120 28") + L("M100 52 L100 90")
+  };
+  const art = (type, tone) => `<svg class="garment" viewBox="0 0 200 250" style="--tone:${esc(tone || "#7f9480")}" aria-hidden="true">${SHAPES[type] || SHAPES.tee}</svg>`;
+  const photoOrArt = p => okImg(p.img) ? `<img src="${esc(p.img)}" alt="">` : art(p.type, p.tone);
+
+  try { const saved = JSON.parse(localStorage.getItem("rudra-cart-v2") || "[]"); if (Array.isArray(saved)) state.cart = saved.filter(i => products.some(p => p.id === i.id)); } catch (e) {}
+  const saveCart = () => { try { localStorage.setItem("rudra-cart-v2", JSON.stringify(state.cart)); } catch (e) {} };
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $("#toast");
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+  }
+
+  // ---- Arches and chips ----
+  function renderArches() {
+    const cats = ["Men", "Women", "Kids"].filter(c => products.some(p => p.category === c));
+    const el = $("#arches");
+    el.style.setProperty("--n", cats.length || 1);
+    el.innerHTML = cats.map(c => {
+      const list = products.filter(p => p.category === c);
+      const withPhoto = list.find(p => okImg(p.img));
+      const first = list[0], min = Math.min(...list.map(p => p.price));
+      const pic = withPhoto ? `<img class="ph" src="${esc(withPhoto.img)}" alt="">` : art(first.type, first.tone);
+      return `<button class="arch${withPhoto ? " has-photo" : ""}" type="button" data-cat="${c}" aria-label="Shop ${CAT_LABEL[c]}">${pic}<span class="arch-label"><b>${c}</b><small>from ${inr(min)}</small></span></button>`;
+    }).join("");
+  }
+  function renderChips() {
+    $("#chips").innerHTML = Object.keys(CAT_LABEL).map(c => {
+      const n = c === "All" ? products.length : products.filter(p => p.category === c).length;
+      return `<button class="chip" type="button" data-cat="${c}" aria-pressed="${state.cat === c}">${CAT_LABEL[c]}<small>${n}</small></button>`;
+    }).join("");
+  }
+  function setCategory(c, scroll) {
+    state.cat = c; renderChips(); renderProducts();
+    if (scroll) $("#shop").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+  }
+
+  // ---- Products ----
+  function renderProducts() {
+    const words = state.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const list = products.filter(p => {
+      if (state.cat !== "All" && p.category !== state.cat) return false;
+      const hay = (p.name + " " + p.desc + " " + p.category + " " + CAT_LABEL[p.category]).toLowerCase();
+      return words.every(w => hay.includes(w));
+    });
+    $("#productGrid").innerHTML = list.length ? list.map(p => {
+      const hasOff = p.mrp > p.price, off = hasOff ? Math.round((1 - p.price / p.mrp) * 100) : 0;
+      const img = okImg(p.img) ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">` : "";
+      const sizes = (p.sizes || []).map(s => `<button class="size" type="button" data-size="${esc(s)}" data-id="${esc(p.id)}" aria-pressed="${state.sel[p.id] === s}">${esc(s)}</button>`).join("");
+      return `<article class="card${p.soldOut ? " is-sold" : ""}">
+        <div class="art">${art(p.type, p.tone)}${img}${p.soldOut ? '<span class="sold">Sold out</span>' : hasOff ? `<span class="off">${off}% OFF</span>` : ""}<span class="tag">${esc(p.category)}</span></div>
+        <div class="body">
+          <h3 class="name">${esc(p.name)}</h3>
+          <p class="desc">${esc(p.desc)}</p>
+          <div class="sizes" role="group" aria-label="Size">${sizes}</div>
+          <div class="price"><b>${inr(p.price)}</b>${hasOff ? `<s>${inr(p.mrp)}</s>` : ""}<em>COD</em></div>
+          <button class="add" type="button" data-add="${esc(p.id)}"${p.soldOut ? " disabled" : ""}>${p.soldOut ? "Sold out" : "Add to bag"}</button>
+        </div>
+      </article>`;
+    }).join("") : `<div class="empty">${products.length ? "No outfits match your search. Try another word or clear the filter." : "New outfits are coming soon. Message us on WhatsApp to ask what is in stock."}</div>`;
+  }
+
+  // ---- Cart ----
+  const cartLines = () => state.cart.map(i => ({ ...i, p: products.find(p => p.id === i.id) })).filter(i => i.p);
+  const subtotal = () => cartLines().reduce((s, i) => s + i.p.price * i.qty, 0);
+
+  function renderCart() {
+    const lines = cartLines(), count = lines.reduce((s, i) => s + i.qty, 0), sub = subtotal();
+    $("#cartCount").textContent = count;
+    $("#cartItems").innerHTML = lines.length ? lines.map((i, idx) => `
+      <div class="line">
+        <div class="thumb">${photoOrArt(i.p)}</div>
+        <div><b>${esc(i.p.name)}</b><small>Size ${esc(i.size)} · ${inr(i.p.price)}</small>
+          <div class="qty"><button type="button" data-q="-1" data-i="${idx}" aria-label="Decrease quantity">−</button><span>${i.qty}</span><button type="button" data-q="1" data-i="${idx}" aria-label="Increase quantity">+</button></div></div>
+        <button class="rm" type="button" data-rm="${idx}">Remove</button>
+      </div>`).join("") : `<div class="cart-empty">Your bag is empty.<br>Pick a size and tap Add to bag.</div>`;
+
+    const left = CONFIG.freeDeliveryAbove - sub;
+    const ship = $("#ship");
+    ship.style.setProperty("--p", Math.min(100, sub / CONFIG.freeDeliveryAbove * 100) + "%");
+    ship.innerHTML = sub === 0 ? `Free delivery on orders above ${inr(CONFIG.freeDeliveryAbove)}<i></i>`
+      : left > 0 ? `Add ${inr(left)} more for free delivery<i></i>` : `You have free delivery on this order<i></i>`;
+
+    $("#subTotal").textContent = inr(sub);
+    $("#delivery").textContent = sub >= CONFIG.freeDeliveryAbove ? "Free" : "Confirmed on WhatsApp";
+    $("#cartTotal").textContent = inr(sub);
+    $("#orderBtn").disabled = lines.length === 0;
+    $("#done").hidden = true;
+    saveCart();
+  }
+
+  function addToCart(id) {
+    const size = state.sel[id];
+    if (!size) { toast("Pick a size first"); return; }
+    const hit = state.cart.find(i => i.id === id && i.size === size);
+    hit ? hit.qty++ : state.cart.push({ id, size, qty: 1 });
+    renderCart(); toast("Added to your bag");
+    const b = $("#bagBtn"); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump");
+  }
+
+  function openCart() { $("#overlay").classList.add("open"); $("#drawer").classList.add("open"); $("#closeBtn").focus(); }
+  function closeCart() { $("#overlay").classList.remove("open"); $("#drawer").classList.remove("open"); $("#bagBtn").focus(); }
+
+  // ---- Order on WhatsApp ----
+  function fieldError(id, bad) { const f = $(id); f.classList.toggle("bad", bad); f.querySelector(".err").hidden = !bad; return bad; }
+
+  function sendOrder() {
+    const name = $("#custName").value.trim();
+    const phone = $("#custPhone").value.replace(/[\s-]/g, "").replace(/^(\+91|91|0)(?=\d{10}$)/, "");
+    const addr = $("#custAddress").value.trim();
+    const bad = [fieldError("#fName", name.length < 2), fieldError("#fPhone", !/^[6-9]\d{9}$/.test(phone)), fieldError("#fAddr", addr.length < 10)];
+    if (bad.some(Boolean)) { document.querySelector(".field.bad input")?.focus(); return; }
+
+    const pay = $("#payMode").value === "UPI" ? "UPI (screenshot to follow)" : "Cash on delivery";
+    const rows = cartLines().map((i, n) => `${n + 1}. ${i.p.name} | Size ${i.size} | Qty ${i.qty} | ${inr(i.p.price * i.qty)}`).join("\n");
+    const msg = `*New order - Rudra Fashion*\n\n${rows}\n\n*Total: ${inr(subtotal())}*\nPayment: ${pay}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${addr}`;
+    const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+    $("#waLink").href = url; $("#done").hidden = false;
+    window.open(url, "_blank");
+  }
+
+  // ======== Owner tools ========
+  const TYPES = [["tee", "T-shirt"], ["shirt", "Shirt"], ["kurti", "Kurti"], ["kurta", "Kids kurta set"], ["coord", "Co-ord set"], ["hoodie", "Hoodie set"], ["cargo", "Joggers or pants"], ["kurtiset", "Kurti with palazzo"]];
+  const TONES = ["#d8d0c0", "#8c2f45", "#c58b2b", "#7f9480", "#3f5f7d", "#b5533a", "#6b6650", "#2f6e66", "#1f1f24", "#e8b4b8"];
+  const SIZE_SETS = { Men: ["S", "M", "L", "XL", "XXL"], Women: ["S", "M", "L", "XL", "XXL"], Kids: ["2-4Y", "4-6Y", "6-8Y", "8-10Y", "10-12Y"] };
+  const A = { cur: null, isNew: false, busy: false, delArm: null, delTimer: 0 };
+
+  function buildDoc(next) {
+    const tpl = JSON.parse(document.getElementById("tpl").textContent);
+    const j = o => JSON.stringify(o).replace(/</g, "\\u003c");
+    const content = tpl.replace(/%%(DATA|TEMPLATE)%%/g, (m, k) => k === "DATA" ? j({ products: next }) : j(tpl));
+    return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + RESET + "</style></head><body>" + content + "</body></html>";
+  }
+
+  function setBusy(on) {
+    A.busy = on;
+    document.querySelectorAll("#sheet button").forEach(b => { b.disabled = on; });
+    $("#pfSave").textContent = on ? "Saving..." : "Save and publish";
+  }
+
+  async function persist(next) {
+    if (A.busy) return;
+    setBusy(true);
+    try {
+      const art = await claude.use("artifact");
+      if (!art) throw { code: "not_granted" };
+      const html = buildDoc(next);
+      if (html.length > 14e6) throw { code: "too_large" };
+      try { sessionStorage.setItem("rudra-admin", "1"); } catch (e) {}
+      await art.publish(html);
+    } catch (e) {
+      setBusy(false);
+      try { sessionStorage.removeItem("rudra-admin"); } catch (_) {}
+      const c = e && e.code;
+      toast(c === "not_writer" || c === "not_granted" ? "You need edit access to change this shop."
+        : c === "too_large" ? "Photos are too big. Remove a photo and try again."
+        : c === "rate_limited" ? "Please wait a few seconds and try again."
+        : c === "conflict" ? "The shop was updated somewhere else. Reloading."
+        : "Could not save. Check your connection and try again.");
+    }
+  }
+
+  function showSheet(on) {
+    $("#sheet").hidden = !on;
+    document.body.style.overflow = on ? "hidden" : "";
+    if (on) showList(); else $("#manageBtn").focus();
+  }
+  function showList() {
+    A.cur = null; A.delArm = null;
+    $("#listView").hidden = false; $("#editView").hidden = true;
+    $("#sheetTitle").textContent = "Manage products";
+    renderAdminList(); $("#sheetBody").scrollTop = 0;
+  }
+  function renderAdminList() {
+    $("#adminList").innerHTML = products.length ? products.map(p => `
+      <div class="prow">
+        <div class="pthumb">${photoOrArt(p)}</div>
+        <div class="pinfo"><b>${esc(p.name)}</b><small>${esc(p.category)} · ${inr(p.price)}${p.soldOut ? " · Sold out" : ""}</small></div>
+        <div class="pbtns">
+          <button class="mini" type="button" data-edit="${esc(p.id)}">Edit</button>
+          <button class="mini${A.delArm === p.id ? " armed" : ""}" type="button" data-del="${esc(p.id)}">${A.delArm === p.id ? "Tap again to delete" : "Delete"}</button>
+        </div>
+      </div>`).join("") : '<p class="hint" style="margin-top:16px">No products yet. Tap Add new product to start.</p>';
+  }
+
+  function openEdit(p) {
+    A.isNew = !p; A.delArm = null;
+    const base = p || { id: "n" + Date.now().toString(36), name: "", category: "Men", price: "", mrp: "", desc: "", sizes: [], type: "tee", tone: TONES[0], img: "", soldOut: false };
+    A.cur = { ...base, sizes: [...(base.sizes || [])] };
+    $("#pfName").value = base.name; $("#pfPrice").value = base.price; $("#pfMrp").value = base.mrp || "";
+    $("#pfDesc").value = base.desc; $("#pfSold").checked = !!base.soldOut; $("#pfCustom").value = "";
+    $("#pfType").innerHTML = TYPES.map(([v, l]) => `<option value="${v}"${v === A.cur.type ? " selected" : ""}>${l}</option>`).join("");
+    $("#pfErr").hidden = true; $("#pfDelete").hidden = !p; $("#pfDelete").textContent = "Delete this product"; $("#pfDelete").classList.remove("armed");
+    $("#editTitle").textContent = p ? "Edit product" : "New product";
+    $("#sheetTitle").textContent = p ? "Edit product" : "Add product";
+    renderCatSeg(); renderSizes(); renderTones(); renderPhoto(); renderDisc();
+    $("#listView").hidden = true; $("#editView").hidden = false; $("#sheetBody").scrollTop = 0;
+  }
+  function renderCatSeg() { document.querySelectorAll("#pfCat button").forEach(b => b.setAttribute("aria-pressed", b.dataset.pcat === A.cur.category)); }
+  function renderSizes() {
+    const all = [...new Set([...SIZE_SETS[A.cur.category], ...A.cur.sizes])];
+    $("#pfSizes").innerHTML = all.map(s => `<button class="size" type="button" data-psize="${esc(s)}" aria-pressed="${A.cur.sizes.includes(s)}">${esc(s)}</button>`).join("");
+  }
+  function renderTones() {
+    $("#pfTones").innerHTML = TONES.map(t => `<button type="button" style="--sw:${t}" data-tone="${t}" aria-label="Colour ${t}" aria-pressed="${A.cur.tone === t}"></button>`).join("");
+  }
+  function renderPhoto() {
+    $("#phBox").innerHTML = okImg(A.cur.img) ? `<img src="${esc(A.cur.img)}" alt="Product photo">` : "No photo yet";
+    $("#phRemove").hidden = !okImg(A.cur.img);
+  }
+  function renderDisc() {
+    const price = Number($("#pfPrice").value), mrp = Number($("#pfMrp").value);
+    $("#discHint").textContent = mrp > price && price > 0 ? `Customers will see ${Math.round((1 - price / mrp) * 100)}% OFF.` : "No discount badge. Add an MRP higher than the price to show one.";
+  }
+
+  async function fileToJpeg(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+      const W = 720, H = 900, c = document.createElement("canvas"); c.width = W; c.height = H;
+      const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
+      const s = Math.max(W / img.naturalWidth, H / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
+      x.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+      return c.toDataURL("image/jpeg", 0.8);
+    } finally { URL.revokeObjectURL(url); }
+  }
+
+  function saveProduct() {
+    const name = $("#pfName").value.trim();
+    const price = Math.round(Number($("#pfPrice").value));
+    const mrp = Math.round(Number($("#pfMrp").value)) || 0;
+    const fail = m => { const e = $("#pfErr"); e.textContent = m; e.hidden = false; e.scrollIntoView({ block: "center" }); };
+    if (name.length < 2) return fail("Enter the product name.");
+    if (!(price > 0)) return fail("Enter the selling price.");
+    if (!A.cur.sizes.length) return fail("Select at least one size.");
+    const order = [...new Set([...SIZE_SETS[A.cur.category], ...A.cur.sizes])];
+    const p = {
+      id: A.cur.id, name, category: A.cur.category, price, mrp,
+      desc: $("#pfDesc").value.trim(), sizes: order.filter(s => A.cur.sizes.includes(s)),
+      type: $("#pfType").value, tone: A.cur.tone, img: A.cur.img || "", soldOut: $("#pfSold").checked
+    };
+    persist(A.isNew ? [p, ...products] : products.map(x => x.id === p.id ? p : x));
+  }
+  function deleteProduct(id) { persist(products.filter(p => p.id !== id)); }
+
+  function armDelete(id, rerender) {
+    if (A.delArm === id) { deleteProduct(id); return; }
+    A.delArm = id; clearTimeout(A.delTimer);
+    A.delTimer = setTimeout(() => { A.delArm = null; rerender(); }, 4000);
+    rerender();
+  }
+
+  async function initAdmin() {
+    try {
+      if (!window.claude || !window.claude.use) return;
+      const user = await claude.use("user");
+      const can = user ? await user.canEdit() : false;
+      if (!can) return;
+      const art = await claude.use("artifact");
+      if (!art) return;
+      $("#manageBtn").hidden = false;
+      let reopen = false;
+      try { reopen = sessionStorage.getItem("rudra-admin") === "1"; sessionStorage.removeItem("rudra-admin"); } catch (e) {}
+      if (reopen) { showSheet(true); toast("Saved. Your shop is updated."); }
+    } catch (e) {}
+  }
+
+  // ---- Events ----
+  document.addEventListener("click", e => {
+    const t = e.target.closest("button, a");
+    if (!t) return;
+    if (t.dataset.cat) setCategory(t.dataset.cat, t.classList.contains("arch"));
+    else if (t.dataset.nav) setCategory(t.dataset.nav, true);
+    else if (t.dataset.size) {
+      state.sel[t.dataset.id] = t.dataset.size;
+      t.parentElement.querySelectorAll(".size").forEach(b => b.setAttribute("aria-pressed", b === t));
+    }
+    else if (t.dataset.add) addToCart(t.dataset.add);
+    else if (t.dataset.q) {
+      const item = state.cart[+t.dataset.i]; item.qty += +t.dataset.q;
+      if (item.qty < 1) state.cart.splice(+t.dataset.i, 1);
+      renderCart();
+    }
+    else if (t.dataset.rm) { state.cart.splice(+t.dataset.rm, 1); renderCart(); }
+    // owner tools
+    else if (t.dataset.edit) openEdit(products.find(p => p.id === t.dataset.edit));
+    else if (t.dataset.del) armDelete(t.dataset.del, renderAdminList);
+    else if (t.dataset.pcat) {
+      if ((t.dataset.pcat === "Kids") !== (A.cur.category === "Kids")) A.cur.sizes = [];
+      A.cur.category = t.dataset.pcat; renderCatSeg(); renderSizes();
+    }
+    else if (t.dataset.psize) {
+      const s = t.dataset.psize, i = A.cur.sizes.indexOf(s);
+      i >= 0 ? A.cur.sizes.splice(i, 1) : A.cur.sizes.push(s); renderSizes();
+    }
+    else if (t.dataset.tone) { A.cur.tone = t.dataset.tone; renderTones(); }
+  });
+  $("#shopNow").addEventListener("click", e => { e.preventDefault(); $("#shop").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); });
+  $("#searchInput").addEventListener("input", e => { state.q = e.target.value; renderProducts(); });
+  $("#bagBtn").addEventListener("click", openCart);
+  $("#closeBtn").addEventListener("click", closeCart);
+  $("#overlay").addEventListener("click", closeCart);
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    if (!$("#sheet").hidden && !A.busy) showSheet(false);
+    else if ($("#drawer").classList.contains("open")) closeCart();
+  });
+  $("#payMode").addEventListener("change", e => { $("#upiBox").hidden = e.target.value !== "UPI"; });
+  $("#orderBtn").addEventListener("click", sendOrder);
+  $("#copyUpi").addEventListener("click", () => {
+    const done = () => toast("UPI ID copied");
+    const fail = () => { const r = document.createRange(); r.selectNodeContents($("#upiText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Press and hold to copy"); };
+    navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(CONFIG.upi).then(done, fail) : fail();
+  });
+
+  $("#manageBtn").addEventListener("click", () => showSheet(true));
+  $("#sheetClose").addEventListener("click", () => showSheet(false));
+  $("#addNew").addEventListener("click", () => openEdit(null));
+  $("#pfCancel").addEventListener("click", showList);
+  $("#editView").addEventListener("submit", e => { e.preventDefault(); saveProduct(); });
+  $("#pfPrice").addEventListener("input", renderDisc);
+  $("#pfMrp").addEventListener("input", renderDisc);
+  $("#pfAddSize").addEventListener("click", () => {
+    const s = $("#pfCustom").value.trim();
+    if (!s) return;
+    if (!A.cur.sizes.includes(s)) A.cur.sizes.push(s);
+    $("#pfCustom").value = ""; renderSizes();
+  });
+  $("#pfCustom").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("#pfAddSize").click(); } });
+  $("#phRemove").addEventListener("click", () => { A.cur.img = ""; renderPhoto(); });
+  $("#pfPhoto").addEventListener("change", async e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = "";
+    if (!f) return;
+    try { A.cur.img = await fileToJpeg(f); renderPhoto(); }
+    catch (err) { toast("Could not read that photo. Try a JPG or PNG."); }
+  });
+  $("#pfDelete").addEventListener("click", () => {
+    const b = $("#pfDelete");
+    if (b.classList.contains("armed")) { deleteProduct(A.cur.id); return; }
+    b.classList.add("armed"); b.textContent = "Tap again to delete";
+    setTimeout(() => { b.classList.remove("armed"); b.textContent = "Delete this product"; }, 4000);
+  });
+
+  // ---- Start ----
+  const waBase = `https://wa.me/${CONFIG.whatsapp}`;
+  $("#heroWa").href = waBase + "?text=" + encodeURIComponent("Hi Rudra Fashion, I need help choosing an outfit.");
+  $("#footWa").href = waBase;
+  $("#upiText").textContent = CONFIG.upi;
+  renderArches(); renderChips(); renderProducts(); renderCart();
+  initAdmin();
+</script>
+
+</body></html>
