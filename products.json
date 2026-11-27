@@ -1,6 +1,24 @@
 {
   "products": [
     {
+      "id": "pmwygiym9",
+      "name": "Men's Solid  Black Baggy T shirt with Street Act",
+      "category": "Men",
+      "price": 349,
+      "mrp": 499,
+      "desc": "Keep it classy with this black oversized T-shirt featuring elegant golden graphic detailing. Comfortable, stylish and perfect for a modern streetwear look. Pair",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "type": "tee",
+      "tone": "#d8d0c0",
+      "img": "images/pmwygiym9-mwygmkkm.jpg",
+      "soldOut": false
+    },
+    {
       "id": "pmwyg5l1p",
       "name": "Men's Neutral Beige Baggy T shirt with Street Act",
       "category": "Men",
@@ -165,5 +183,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T04:03:58.801Z"
+  "updated": "2026-11-27T04:07:05.682Z"
 }
