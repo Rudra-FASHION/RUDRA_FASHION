@@ -108,26 +108,7 @@
       "tone": "#b5533a",
       "img": "",
       "soldOut": false
-    },
-    {
-      "id": "p8",
-      "name": "Women's Cotton Kurti & Palazzo Set",
-      "category": "Women",
-      "price": 699,
-      "mrp": 1399,
-      "desc": "Straight-cut cotton kurti with flowy palazzo pants for everyday wear.",
-      "sizes": [
-        "S",
-        "M",
-        "L",
-        "XL",
-        "XXL"
-      ],
-      "type": "kurtiset",
-      "tone": "#2f6e66",
-      "img": "",
-      "soldOut": false
     }
   ],
-  "updated": "2026-11-27T09:24:31.105Z"
+  "updated": "2026-11-27T09:24:36.546Z"
 }
