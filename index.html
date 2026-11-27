@@ -7,7 +7,68 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#100e0c">
+<meta name="description" content="Rudra Fashion: premium men, women and kids clothing at honest prices. Free delivery across India above ₹699, cash on delivery, easy WhatsApp ordering.">
+<link rel="canonical" href="https://rudra-fashion.github.io/RUDRA_FASHION/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rudra Fashion">
+<meta property="og:locale" content="en_IN">
+<meta property="og:title" content="Rudra Fashion | Men, Women and Kids Clothing">
+<meta property="og:description" content="Premium fits at honest prices. Free delivery above ₹699, cash on delivery, order on WhatsApp.">
+<meta property="og:url" content="https://rudra-fashion.github.io/RUDRA_FASHION/">
+<meta property="og:image" content="https://rudra-fashion.github.io/RUDRA_FASHION/og.jpg?v=1">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rudra Fashion, men, women and kids clothing">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Rudra Fashion | Men, Women and Kids Clothing">
+<meta name="twitter:description" content="Premium fits at honest prices. Free delivery above ₹699, cash on delivery, order on WhatsApp.">
+<meta name="twitter:image" content="https://rudra-fashion.github.io/RUDRA_FASHION/og.jpg?v=1">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="style.css?v=2">
+<style>
+  /* Product photo slider and fullscreen gallery */
+  .art .slides { position: absolute; inset: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+  .art .slides::-webkit-scrollbar { display: none; }
+  .slide { position: relative; flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; border: 0; padding: 0; background: none; cursor: zoom-in; }
+  .art .off, .art .sold, .art .tag { z-index: 2; pointer-events: none; }
+  .art .dots { position: absolute; left: 0; right: 0; bottom: 10px; z-index: 2; display: flex; justify-content: center; gap: 5px; pointer-events: none; }
+  .art .dots i { width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.55); box-shadow: 0 0 3px rgba(0,0,0,.5); transition: width .2s, background .2s; }
+  .art .dots i.on { width: 16px; background: #fff; }
+  .art .nav { position: absolute; top: 50%; z-index: 3; width: 32px; height: 32px; margin-top: -16px; border: 0; border-radius: 50%; background: rgba(0,0,0,.5); color: #fff; font-size: 22px; line-height: 1; padding: 0 0 3px; }
+  .art .nav.prev { left: 8px; } .art .nav.next { right: 8px; }
+  @media (hover: hover) { .art .nav { opacity: 0; transition: opacity .2s; } .card:hover .art .nav { opacity: 1; } }
+  @media (hover: none) { .art .nav { display: none; } }
+
+  .lb { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.95); display: flex; align-items: center; }
+  .lb[hidden] { display: none; }
+  .lb-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .lb-track::-webkit-scrollbar { display: none; }
+  .lb-slide { flex: 0 0 100%; height: 100%; scroll-snap-align: center; scroll-snap-stop: always; display: grid; place-items: center; padding: calc(56px + env(safe-area-inset-top, 0px)) 12px calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .lb-slide img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
+  .lb-x { position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: 12px; z-index: 2; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35); background: rgba(0,0,0,.5); color: #fff; font-size: 18px; }
+  .lb-count { position: absolute; top: calc(20px + env(safe-area-inset-top, 0px)); left: 16px; z-index: 2; color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .06em; }
+  .lb-nav { position: absolute; top: 50%; z-index: 2; width: 44px; height: 44px; margin-top: -22px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35); background: rgba(0,0,0,.5); color: #fff; font-size: 26px; line-height: 1; padding: 0 0 4px; }
+  .lb-prev { left: 12px; } .lb-next { right: 12px; }
+  .lb.single .lb-nav { display: none; }
+  @media (hover: none) { .lb-nav { display: none; } }
+
+  /* UPI app buttons */
+  .upay { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+  .upay[hidden] { display: none; }
+  .upay p { margin: 0; }
+  .upay-t { font-size: 13px; font-weight: 700; }
+  .upay-apps { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .upay-app { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--fg); text-decoration: none; font-size: 13px; font-weight: 700; line-height: 1.2; }
+  .upay-app:hover { border-color: var(--brass); }
+  .upay-app i { flex: none; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; color: #fff; font-style: normal; font-size: 13px; font-weight: 800; }
+  .upay-id, .upay-n, .upay-fb { font-size: 12px; color: var(--muted); }
+  .upay-id b { color: var(--fg); font-variant-numeric: tabular-nums; }
+  .upay-fb code { font: 700 12px/1.4 ui-monospace, Menlo, monospace; color: var(--fg); user-select: all; word-break: break-all; }
+  .upay-fb button { margin-left: 4px; border: 0; background: none; color: var(--brass); font-size: 12px; font-weight: 700; text-decoration: underline; padding: 2px 4px; }
+</style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -118,13 +179,20 @@
         <label for="payMode">Payment</label>
         <select id="payMode">
           <option value="COD">Cash on delivery</option>
-          <option value="UPI">UPI (faster dispatch)</option>
+          <option value="UPI">UPI (PhonePe, Google Pay, Paytm)</option>
         </select>
       </div>
-      <div class="upi" id="upiBox" hidden>
-        <span>UPI ID</span><code id="upiText"></code>
-        <button type="button" id="copyUpi">Copy</button>
-        <p>After paying, send the payment screenshot on WhatsApp.</p>
+      <div class="upay" id="upiBox" hidden>
+        <p class="upay-t">Apni UPI app chuno. Amount apne aap bhar jayega.</p>
+        <div class="upay-apps">
+          <a class="upay-app" data-upi="phonepe" href="#"><i style="background:#5f259f">Pe</i>PhonePe</a>
+          <a class="upay-app" data-upi="gpay" href="#"><i style="background:#1a73e8">G</i>Google Pay</a>
+          <a class="upay-app" data-upi="paytm" href="#"><i style="background:#00b9f1">P</i>Paytm</a>
+          <a class="upay-app" data-upi="any" href="#"><i style="background:#2d6a4f">₹</i>Koi aur UPI app</a>
+        </div>
+        <p class="upay-id">Order ID: <b id="orderIdText"></b></p>
+        <p class="upay-n">Payment ke baad neeche "Confirm order on WhatsApp" dabao aur payment ka screenshot bhejo.</p>
+        <p class="upay-fb">App nahi khuli? UPI ID <code id="upiText"></code> <button type="button" id="copyUpi">Copy</button></p>
       </div>
     </form>
   </div>
@@ -139,8 +207,17 @@
   </div>
 </aside>
 
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photos">
+  <button class="lb-x" id="lbClose" type="button" aria-label="Band karo">✕</button>
+  <span class="lb-count" id="lbCount"></span>
+  <div class="lb-track" id="lbTrack"></div>
+  <button class="lb-nav lb-prev" type="button" data-lb="-1" aria-label="Pichli photo">‹</button>
+  <button class="lb-nav lb-next" type="button" data-lb="1" aria-label="Agli photo">›</button>
+</div>
+
 <div class="toast" id="toast" role="status"></div>
 
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
-</html>
+    </html>
+    
