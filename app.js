@@ -2,7 +2,8 @@
   const CONFIG = {
     whatsapp: "919251073424",          // country code first, no + sign
     upi: "vihanthakur021x@ptyes",
-    freeDeliveryAbove: 699
+    freeDeliveryAbove: 699,
+    shopName: "Rudra Fashion"
   };
   // Products come from products.json (edited by the admin app).
   const FALLBACK = [];
@@ -12,6 +13,7 @@
   const $ = s => document.querySelector(s);
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const okImg = u => typeof u === "string" && (/^images\/[A-Za-z0-9._-]+$/.test(u) || u.startsWith("https://"));
+  const imgs = p => (Array.isArray(p.images) && p.images.length ? p.images : (p.img ? [p.img] : [])).filter(okImg);
   const inr = n => "₹" + Number(n).toLocaleString("en-IN");
   const CAT_LABEL = { All: "All collection", Men: "Men's wear", Women: "Women's wear", Kids: "Kids' wear" };
   const state = { cat: "All", q: "", sel: {}, cart: [] };
@@ -31,7 +33,7 @@
     kurtiset: P("M76 26 L100 38 L124 26 L136 62 L132 124 L68 124 L64 62 Z") + P("M68 130 L132 130 L166 236 L108 236 L100 156 L92 236 L34 236 Z") + L("M80 28 Q100 52 120 28") + L("M100 52 L100 90")
   };
   const art = (type, tone) => `<svg class="garment" viewBox="0 0 200 250" style="--tone:${esc(tone || "#7f9480")}" aria-hidden="true">${SHAPES[type] || SHAPES.tee}</svg>`;
-  const photoOrArt = p => okImg(p.img) ? `<img src="${esc(p.img)}" alt="">` : art(p.type, p.tone);
+  const photoOrArt = p => imgs(p).length ? `<img src="${esc(imgs(p)[0])}" alt="">` : art(p.type, p.tone);
 
   try { const saved = JSON.parse(localStorage.getItem("rudra-cart-v2") || "[]"); if (Array.isArray(saved)) state.cart = saved.filter(i => i && i.id && i.size && i.qty > 0); } catch (e) {}
   const saveCart = () => { try { localStorage.setItem("rudra-cart-v2", JSON.stringify(state.cart)); } catch (e) {} };
@@ -50,9 +52,9 @@
     el.style.setProperty("--n", cats.length || 1);
     el.innerHTML = cats.map(c => {
       const list = products.filter(p => p.category === c);
-      const withPhoto = list.find(p => okImg(p.img));
+      const withPhoto = list.find(p => imgs(p).length);
       const first = list[0], min = Math.min(...list.map(p => p.price));
-      const pic = withPhoto ? `<img class="ph" src="${esc(withPhoto.img)}" alt="">` : art(first.type, first.tone);
+      const pic = withPhoto ? `<img class="ph" src="${esc(imgs(withPhoto)[0])}" alt="">` : art(first.type, first.tone);
       return `<button class="arch${withPhoto ? " has-photo" : ""}" type="button" data-cat="${c}" aria-label="Shop ${CAT_LABEL[c]}">${pic}<span class="arch-label"><b>${c}</b><small>from ${inr(min)}</small></span></button>`;
     }).join("");
   }
@@ -77,10 +79,12 @@
     });
     $("#productGrid").innerHTML = list.length ? list.map(p => {
       const hasOff = p.mrp > p.price, off = hasOff ? Math.round((1 - p.price / p.mrp) * 100) : 0;
-      const img = okImg(p.img) ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">` : "";
+      const im = imgs(p);
+      const slides = im.length ? `<div class="slides">${im.map((u, i) => `<button class="slide" type="button" data-zoom="${esc(p.id)}" data-i="${i}" aria-label="Photo ${i + 1} bade size me dekho"><img src="${esc(u)}" alt="${esc(p.name)} photo ${i + 1}"${i ? ' loading="lazy"' : ""}></button>`).join("")}</div>`
+        + (im.length > 1 ? `<button class="nav prev" type="button" data-slide="-1" aria-label="Pichli photo">‹</button><button class="nav next" type="button" data-slide="1" aria-label="Agli photo">›</button><span class="dots" aria-hidden="true">${im.map((_, i) => `<i${i ? "" : ' class="on"'}></i>`).join("")}</span>` : "") : art(p.type, p.tone);
       const sizes = (p.sizes || []).map(s => `<button class="size" type="button" data-size="${esc(s)}" data-id="${esc(p.id)}" aria-pressed="${state.sel[p.id] === s}">${esc(s)}</button>`).join("");
       return `<article class="card${p.soldOut ? " is-sold" : ""}">
-        <div class="art">${art(p.type, p.tone)}${img}${p.soldOut ? '<span class="sold">Sold out</span>' : hasOff ? `<span class="off">${off}% OFF</span>` : ""}<span class="tag">${esc(p.category)}</span></div>
+        <div class="art">${slides}${p.soldOut ? '<span class="sold">Sold out</span>' : hasOff ? `<span class="off">${off}% OFF</span>` : ""}<span class="tag">${esc(p.category)}</span></div>
         <div class="body">
           <h3 class="name">${esc(p.name)}</h3>
           <p class="desc">${esc(p.desc)}</p>
@@ -119,6 +123,7 @@
     $("#orderBtn").disabled = lines.length === 0;
     $("#done").hidden = true;
     saveCart();
+    if (typeof refreshUpi === "function") refreshUpi();
   }
 
   function addToCart(id) {
@@ -133,6 +138,59 @@
   function openCart() { $("#overlay").classList.add("open"); $("#drawer").classList.add("open"); $("#closeBtn").focus(); }
   function closeCart() { $("#overlay").classList.remove("open"); $("#drawer").classList.remove("open"); $("#bagBtn").focus(); }
 
+  // ---- Photo gallery (fullscreen) ----
+  function openLb(id, i) {
+    const p = products.find(x => x.id === id); if (!p) return;
+    const im = imgs(p); if (!im.length) return;
+    $("#lbTrack").innerHTML = im.map((u, k) => `<div class="lb-slide"><img src="${esc(u)}" alt="${esc(p.name)} photo ${k + 1}"></div>`).join("");
+    $("#lb").hidden = false; document.body.style.overflow = "hidden";
+    $("#lb").classList.toggle("single", im.length < 2);
+    const tr = $("#lbTrack"); tr.scrollLeft = i * tr.clientWidth; lbCount();
+    $("#lbClose").focus();
+  }
+  function closeLb() { $("#lb").hidden = true; $("#lbTrack").innerHTML = ""; document.body.style.overflow = ""; }
+  function lbCount() {
+    const tr = $("#lbTrack"), n = tr.children.length;
+    $("#lbCount").textContent = n > 1 ? (Math.round(tr.scrollLeft / (tr.clientWidth || 1)) + 1) + " / " + n : "";
+  }
+  document.addEventListener("scroll", e => {
+    const t = e.target;
+    if (!(t instanceof Element)) return;
+    if (t.classList.contains("slides")) {
+      const i = Math.round(t.scrollLeft / (t.clientWidth || 1));
+      t.parentElement.querySelectorAll(".dots i").forEach((d, k) => d.classList.toggle("on", k === i));
+    } else if (t.id === "lbTrack") lbCount();
+  }, true);
+  $("#lbClose").addEventListener("click", closeLb);
+  $("#lbTrack").addEventListener("click", e => { if (e.target.tagName !== "IMG") closeLb(); });
+
+  // ---- UPI app buttons ----
+  const UA = navigator.userAgent, isAndroid = /android/i.test(UA), isIOS = /iphone|ipad|ipod/i.test(UA);
+  const UPI_APPS = {
+    phonepe: { pkg: "com.phonepe.app", ios: "phonepe://pay?" },
+    gpay: { pkg: "com.google.android.apps.nbu.paisa.user", ios: "gpay://upi/pay?" },
+    paytm: { pkg: "net.one97.paytm", ios: "paytmmp://pay?" },
+    any: null
+  };
+  if (!state.orderId) state.orderId = "RF" + Date.now().toString(36).slice(-5).toUpperCase();
+  function upiLink(key) {
+    const q = "pa=" + encodeURIComponent(CONFIG.upi) + "&pn=" + encodeURIComponent(CONFIG.shopName) + "&am=" + subtotal() + "&cu=INR&tn=" + encodeURIComponent("Order " + state.orderId);
+    const app = UPI_APPS[key];
+    if (!app) return "upi://pay?" + q;
+    if (isAndroid) return "intent://pay?" + q + "#Intent;scheme=upi;package=" + app.pkg + ";end";
+    if (isIOS) return app.ios + q;
+    return "upi://pay?" + q;
+  }
+  function refreshUpi() {
+    document.querySelectorAll(".upay-app").forEach(a => { a.href = subtotal() > 0 ? upiLink(a.dataset.upi) : "#"; });
+    $("#orderIdText").textContent = state.orderId;
+  }
+  document.addEventListener("click", e => {
+    const a = e.target.closest(".upay-app"); if (!a) return;
+    if (!subtotal()) { e.preventDefault(); toast("Pehle bag me kapda daalo"); }
+    else if (!isAndroid && !isIOS) { e.preventDefault(); toast("Ye button phone par chalta hai. UPI ID copy karke app me daalo."); }
+  });
+
   // ---- Order on WhatsApp ----
   function fieldError(id, bad) { const f = $(id); f.classList.toggle("bad", bad); f.querySelector(".err").hidden = !bad; return bad; }
 
@@ -144,8 +202,9 @@
     if (bad.some(Boolean)) { document.querySelector(".field.bad input")?.focus(); return; }
 
     const pay = $("#payMode").value === "UPI" ? "UPI (screenshot to follow)" : "Cash on delivery";
+    const ref = state.orderId;
     const rows = cartLines().map((i, n) => `${n + 1}. ${i.p.name} | Size ${i.size} | Qty ${i.qty} | ${inr(i.p.price * i.qty)}`).join("\n");
-    const msg = `*New order - Rudra Fashion*\n\n${rows}\n\n*Total: ${inr(subtotal())}*\nPayment: ${pay}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${addr}`;
+    const msg = `*New order - Rudra Fashion*\nOrder ID: ${ref}\n\n${rows}\n\n*Total: ${inr(subtotal())}*\nPayment: ${pay}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${addr}`;
     const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
     $("#waLink").href = url; $("#done").hidden = false;
     window.open(url, "_blank");
@@ -156,7 +215,10 @@
   document.addEventListener("click", e => {
     const t = e.target.closest("button, a");
     if (!t) return;
-    if (t.dataset.cat) setCategory(t.dataset.cat, t.classList.contains("arch"));
+    if (t.dataset.slide) { const el = t.parentElement.querySelector(".slides"); if (el) el.scrollBy({ left: +t.dataset.slide * el.clientWidth, behavior: reduceMotion ? "auto" : "smooth" }); }
+    else if (t.dataset.zoom) openLb(t.dataset.zoom, +t.dataset.i || 0);
+    else if (t.dataset.lb) { const el = $("#lbTrack"); el.scrollBy({ left: +t.dataset.lb * el.clientWidth, behavior: reduceMotion ? "auto" : "smooth" }); }
+    else if (t.dataset.cat) setCategory(t.dataset.cat, t.classList.contains("arch"));
     else if (t.dataset.nav) setCategory(t.dataset.nav, true);
     else if (t.dataset.size) {
       state.sel[t.dataset.id] = t.dataset.size;
@@ -175,7 +237,15 @@
   $("#bagBtn").addEventListener("click", openCart);
   $("#closeBtn").addEventListener("click", closeCart);
   $("#overlay").addEventListener("click", closeCart);
-  document.addEventListener("keydown", e => { if (e.key === "Escape" && $("#drawer").classList.contains("open")) closeCart(); });
+  document.addEventListener("keydown", e => {
+    if (!$("#lb").hidden) {
+      if (e.key === "Escape") closeLb();
+      else if (e.key === "ArrowRight") $("#lbTrack").scrollBy({ left: $("#lbTrack").clientWidth, behavior: "smooth" });
+      else if (e.key === "ArrowLeft") $("#lbTrack").scrollBy({ left: -$("#lbTrack").clientWidth, behavior: "smooth" });
+      return;
+    }
+    if (e.key === "Escape" && $("#drawer").classList.contains("open")) closeCart();
+  });
   $("#payMode").addEventListener("change", e => { $("#upiBox").hidden = e.target.value !== "UPI"; });
   $("#orderBtn").addEventListener("click", sendOrder);
   $("#copyUpi").addEventListener("click", () => {
@@ -204,3 +274,4 @@
     renderArches(); renderChips(); renderProducts(); renderCart();
   }
   loadProducts();
+    
