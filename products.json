@@ -110,24 +110,6 @@
       "soldOut": false
     },
     {
-      "id": "p7",
-      "name": "Men's Utility Cargo Joggers",
-      "category": "Men",
-      "price": 699,
-      "mrp": 1399,
-      "desc": "Relaxed tapered cargo joggers with side pockets and a soft stretch waist.",
-      "sizes": [
-        "M",
-        "L",
-        "XL",
-        "XXL"
-      ],
-      "type": "cargo",
-      "tone": "#6b6650",
-      "img": "",
-      "soldOut": false
-    },
-    {
       "id": "p8",
       "name": "Women's Cotton Kurti & Palazzo Set",
       "category": "Women",
@@ -147,5 +129,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T09:24:26.296Z"
+  "updated": "2026-11-27T09:24:31.105Z"
 }
