@@ -1,6 +1,24 @@
 {
   "products": [
     {
+      "id": "pmwyfanww",
+      "name": "Men's Stylish Printed Full sleeve Shirt",
+      "category": "Men",
+      "price": 489,
+      "mrp": 0,
+      "desc": "Upgrade your style with this stylish white men's shirt featuring a bold lion print and unique black splash design. Perfect for casual outings, parties and every",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "type": "tee",
+      "tone": "#d8d0c0",
+      "img": "images/pmwyfanww-mwyfgxl7.jpg",
+      "soldOut": false
+    },
+    {
       "id": "p1",
       "name": "Men's Premium Oversized Tee",
       "category": "Men",
@@ -129,5 +147,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T03:28:42.380Z"
+  "updated": "2026-11-27T03:34:42.314Z"
 }
