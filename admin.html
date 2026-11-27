@@ -107,6 +107,8 @@
       <div class="field"><label for="pfMrp">MRP (₹), zaroori nahi</label><input id="pfMrp" type="number" inputmode="numeric" min="1" placeholder="999"></div>
     </div>
     <p class="hint" id="discHint"></p>
+    <div class="field"><label for="pfShip">Is kapde ka delivery charge (₹), free ho to 0</label><input id="pfShip" type="number" inputmode="numeric" min="0" placeholder="0"></div>
+    <p class="hint">Ye charge har ek piece par lagta hai. Customer ka order ₹699 se upar ho to delivery free ho jati hai.</p>
     <div class="field"><label for="pfDesc">Description</label><textarea id="pfDesc" maxlength="160" placeholder="Fabric, fit, kiske liye hai"></textarea></div>
     <div class="field">
       <span class="label">Sizes jo available hain</span>
@@ -127,6 +129,6 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="assets.js?v=1"></script>
-<script src="admin.js?v=4"></script>
+<script src="admin.js?v=5"></script>
 </body>
 </html>
