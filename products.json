@@ -1,6 +1,30 @@
 {
   "products": [
     {
+      "id": "pmwyszt9r",
+      "name": "Men's Black Oversized Fit Calligraphy Graphic Print Drop-Shoulder T-Shirt polis,",
+      "category": "Men",
+      "price": 349,
+      "mrp": 499,
+      "desc": "Apne casual aur streetwear wardrobe ko ek premium touch dein is Black Oversized T-Shirt ke saath. Iske left chest par bana stylish golden calligraphy graphic pr",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "type": "tee",
+      "tone": "#d8d0c0",
+      "images": [
+        "images/pmwyszt9r-mwyt3yw30.jpg",
+        "images/pmwyszt9r-mwyt3yw31.jpg",
+        "images/pmwyszt9r-mwyt3yw32.jpg",
+        "images/pmwyszt9r-mwyt3yw33.jpg"
+      ],
+      "img": "images/pmwyszt9r-mwyt3yw30.jpg",
+      "soldOut": false
+    },
+    {
       "id": "pmwys2dlv",
       "name": "Men's printed Lower/ track pants",
       "category": "Men",
@@ -146,5 +170,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T09:53:04.216Z"
+  "updated": "2026-11-27T09:57:01.044Z"
 }
