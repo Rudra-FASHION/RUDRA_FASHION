@@ -1,6 +1,31 @@
 {
   "products": [
     {
+      "id": "pmwys2dlv",
+      "name": "Men's printed Lower/ track pants",
+      "category": "Men",
+      "price": 409,
+      "mrp": 699,
+      "desc": "Apne streetwear look ko upgrade karein is stylish Black Baggy Trackpant ke saath. Iske left leg par bana bold red spider graphic design ise ek trendy aur edgy l",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "type": "tee",
+      "tone": "#d8d0c0",
+      "images": [
+        "images/pmwys2dlv-mwys8hdj0.jpg",
+        "images/pmwys2dlv-mwys8hdj1.jpg",
+        "images/pmwys2dlv-mwys8hdj2.jpg",
+        "images/pmwys2dlv-mwys8hdj3.jpg",
+        "images/pmwys2dlv-mwys8hdj4.jpg"
+      ],
+      "img": "images/pmwys2dlv-mwys8hdj0.jpg",
+      "soldOut": false
+    },
+    {
       "id": "pmwygr1ah",
       "name": "PREET Premium quality Oversized T shirt, women",
       "category": "Men",
@@ -110,5 +135,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T09:24:36.546Z"
+  "updated": "2026-11-27T09:32:16.393Z"
 }
