@@ -111,24 +111,6 @@
       "soldOut": false
     },
     {
-      "id": "p3",
-      "name": "Kids Festive Ethnic Kurta Pyjama",
-      "category": "Kids",
-      "price": 549,
-      "mrp": 1099,
-      "desc": "Comfortable breathable cotton silk festive wear for boys (2-10 yrs).",
-      "sizes": [
-        "2-4Y",
-        "4-6Y",
-        "6-8Y",
-        "8-10Y"
-      ],
-      "type": "kurta",
-      "tone": "#c58b2b",
-      "img": "",
-      "soldOut": false
-    },
-    {
       "id": "p5",
       "name": "Women's Trendy Co-Ord Set",
       "category": "Women",
@@ -202,5 +184,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T04:19:24.858Z"
+  "updated": "2026-11-27T09:24:11.906Z"
 }
