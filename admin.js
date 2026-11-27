@@ -77,7 +77,10 @@
     $("#disc").hidden = which === "setup";
     window.scrollTo(0, 0);
   }
-  const imgSrc = p => S.thumbs[p.img] || (p.img && /^(images\/[A-Za-z0-9._-]+|https:\/\/.+)$/.test(p.img) ? p.img : "");
+  const MAXP = 6;
+  const allImgs = p => Array.isArray(p.images) && p.images.length ? p.images : (p.img ? [p.img] : []);
+  const srcOf = u => S.thumbs[u] || (u && /^(images\/[A-Za-z0-9._-]+|https:\/\/.+)$/.test(u) ? u : "");
+  const imgSrc = p => srcOf(allImgs(p)[0]);
 
   function renderList() {
     $("#count").textContent = S.products.length ? S.products.length + " kapde store me" : "";
@@ -85,7 +88,7 @@
       const src = imgSrc(p);
       return `<div class="prow">
         <div class="pthumb">${src ? `<img src="${esc(src)}" alt="">` : "Photo nahi"}</div>
-        <div class="pinfo"><b>${esc(p.name)}</b><small>${esc(p.category)} · ${inr(p.price)}${p.mrp > p.price ? " (MRP " + inr(p.mrp) + ")" : ""}${p.soldOut ? ' · <span class="tagsold">Sold out</span>' : ""}</small></div>
+        <div class="pinfo"><b>${esc(p.name)}</b><small>${esc(p.category)} · ${allImgs(p).length} photo · ${inr(p.price)}${p.mrp > p.price ? " (MRP " + inr(p.mrp) + ")" : ""}${p.soldOut ? ' · <span class="tagsold">Sold out</span>' : ""}</small></div>
         <div class="pbtns">
           <button class="mini" type="button" data-edit="${esc(p.id)}">Badlo</button>
           <button class="mini${S.delArm === p.id ? " armed" : ""}" type="button" data-del="${esc(p.id)}">${S.delArm === p.id ? "Pakka hatana hai?" : "Hatao"}</button>
@@ -113,7 +116,7 @@
   function openEdit(p) {
     S.isNew = !p;
     const base = p || { id: "p" + Date.now().toString(36), name: "", category: "Men", price: "", mrp: "", desc: "", sizes: [], type: "", tone: "", img: "", soldOut: false };
-    S.cur = { ...base, sizes: [...(base.sizes || [])], newPhoto: null };
+    S.cur = { ...base, sizes: [...(base.sizes || [])], photos: allImgs(base).filter(u => srcOf(u)).map(u => ({ path: u, src: srcOf(u) })) };
     $("#pfName").value = base.name; $("#pfPrice").value = base.price; $("#pfMrp").value = base.mrp || "";
     $("#pfDesc").value = base.desc || ""; $("#pfSold").checked = !!base.soldOut; $("#pfCustom").value = "";
     $("#pfErr").hidden = true; $("#status").hidden = true;
@@ -127,9 +130,10 @@
     $("#pfSizes").innerHTML = all.map(s => `<button class="size" type="button" data-psize="${esc(s)}" aria-pressed="${S.cur.sizes.includes(s)}">${esc(s)}</button>`).join("");
   }
   function renderPhoto() {
-    const src = S.cur.newPhoto || imgSrc(S.cur);
-    $("#phBox").innerHTML = src ? `<img src="${esc(src)}" alt="Kapde ki photo">` : "Photo nahi lagi";
-    $("#phRemove").hidden = !src;
+    const ph = S.cur.photos;
+    $("#pgrid").innerHTML = ph.map((p, i) => `<div class="pcell"><img src="${esc(p.src)}" alt="Photo ${i + 1}">${i === 0 ? '<span class="pfirst">Pehli</span>' : `<button class="pmk" type="button" data-pfirst="${i}">Pehli banao</button>`}<button class="pdel" type="button" data-pdel="${i}" aria-label="Photo hatao">×</button></div>`).join("")
+      + (ph.length < MAXP ? '<label class="padd" for="pfPhoto"><b>+</b><span>Photo jodo</span></label>' : "");
+    $("#pcount").textContent = ph.length + " / " + MAXP + " photo" + (ph.length < 4 ? ". Kam se kam 4 lagao, tabhi customer ko pasand aata hai." : ".");
   }
   function renderDisc() {
     const price = Number($("#pfPrice").value), mrp = Number($("#pfMrp").value);
@@ -159,26 +163,34 @@
     if (!S.cur.sizes.length) return fail("Kam se kam ek size chuno.");
 
     const old = S.products.find(x => x.id === S.cur.id);
-    const oldImg = old ? old.img : "";
+    const oldImgs = old ? allImgs(old) : [];
     const look = DEFAULT_LOOK[S.cur.category];
     const order = [...new Set([...SIZE_SETS[S.cur.category], ...S.cur.sizes])];
     const item = {
       id: S.cur.id, name, category: S.cur.category, price, mrp,
       desc: $("#pfDesc").value.trim(), sizes: order.filter(s => S.cur.sizes.includes(s)),
-      type: S.cur.type || look[0], tone: S.cur.tone || look[1], img: S.cur.img || "", soldOut: $("#pfSold").checked
+      type: S.cur.type || look[0], tone: S.cur.tone || look[1], images: [], img: "", soldOut: $("#pfSold").checked
     };
 
     setBusy(true, "Save ho raha hai...");
     try {
-      if (S.cur.newPhoto) {
-        setStatus("Photo upload ho rahi hai...");
-        const path = `images/${S.cur.id}-${Date.now().toString(36)}.jpg`;
-        await putFile(path, S.cur.newPhoto.split(",")[1], "Add photo: " + name);
-        S.thumbs[path] = S.cur.newPhoto; item.img = path;
+      const paths = [], stamp = Date.now().toString(36), total = S.cur.photos.filter(p => p.data && !p.path).length;
+      let n = 0;
+      for (const [i, ph] of S.cur.photos.entries()) {
+        if (ph.path) { paths.push(ph.path); continue; }
+        setStatus("Photo " + (++n) + " / " + total + " upload ho rahi hai...");
+        const path = `images/${S.cur.id}-${stamp}${i}.jpg`;
+        await putFile(path, ph.data.split(",")[1], "Add photo: " + name);
+        S.thumbs[path] = ph.data; ph.path = path; paths.push(path);
       }
+      item.images = paths; item.img = paths[0] || "";
       setStatus("Store update ho raha hai...");
       await commit(list => S.isNew ? [item, ...list] : list.map(x => x.id === item.id ? item : x), (S.isNew ? "Add " : "Update ") + name);
-      if (oldImg && oldImg !== item.img && oldImg.startsWith("images/")) tryDeleteFile(oldImg);
+      const gone = oldImgs.filter(u => u.startsWith("images/") && !paths.includes(u));
+      background(async () => {
+        for (const u of gone) await tryDeleteFile(u);
+        if (S.isNew && paths.length) await makeOg();
+      });
       setBusy(false);
       showHome("Save ho gaya. Website par 1 se 2 minute me dikhega.");
     } catch (e) {
@@ -193,7 +205,7 @@
     S.busy = true; document.querySelectorAll("#home button").forEach(b => b.disabled = true);
     try {
       await commit(list => list.filter(x => x.id !== id), "Remove " + (old ? old.name : id));
-      if (old && old.img && old.img.startsWith("images/")) tryDeleteFile(old.img);
+      if (old) background(async () => { for (const u of allImgs(old)) if (u.startsWith("images/")) await tryDeleteFile(u); });
       S.busy = false; document.querySelectorAll("#home button").forEach(b => b.disabled = false);
       showHome("Hata diya. Website par 1 se 2 minute me badlav dikhega.");
     } catch (e) {
@@ -201,6 +213,30 @@
       S.delArm = null; renderList(); toast(explain(e));
     }
   }
+
+  // ---------- Background work, icons and share preview ----------
+  let bgChain = Promise.resolve();
+  const background = fn => { bgChain = bgChain.then(fn).catch(() => {}); };
+  async function putGenerated(path, b64, msg) { const f = await getFile(path); await putFile(path, b64, msg, f && f.sha); }
+  async function makeOg() {
+    const srcs = S.products.filter(p => allImgs(p).length).slice(0, 3).map(p => srcOf(allImgs(p)[0])).filter(Boolean);
+    await putGenerated("og.jpg", await drawOg(srcs), "Update share preview");
+  }
+  async function ensureAssets() {
+    const made = [];
+    for (const [path, size] of [["icons/icon-192.png", 192], ["icons/icon-512.png", 512]]) {
+      if (!(await getFile(path))) { await putFile(path, await drawIcon(size), "Add app icon"); made.push(path); }
+    }
+    if (!(await getFile("og.jpg"))) { await makeOg(); made.push("og.jpg"); }
+    return made;
+  }
+  function afterConnect() {
+    background(async () => {
+      const made = await ensureAssets();
+      if (made.length) { $("#notice").hidden = false; $("#noticeText").textContent = "App icon aur WhatsApp preview ban gaye. 2 minute baad admin dobara kholo, phir Chrome menu me Install app dikhega."; }
+    });
+  }
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 
   // ---------- Connect ----------
   function guessRepo() {
@@ -227,7 +263,7 @@
     if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { err.textContent = "Repo aise likho: naam/repo"; err.hidden = false; return; }
     if (token.length < 20) { err.textContent = "Token paste karo."; err.hidden = false; return; }
     const b = $("#connectBtn"); b.disabled = true; b.textContent = "Connect ho raha hai...";
-    try { await connect(repo, token); $("#tokenIn").value = ""; showHome(""); }
+    try { await connect(repo, token); $("#tokenIn").value = ""; showHome(""); afterConnect(); }
     catch (ex) { err.textContent = explain(ex); err.hidden = false; }
     b.disabled = false; b.textContent = "Connect karo";
   });
@@ -236,6 +272,13 @@
     $("#setupErr").hidden = true; show("setup");
   });
   $("#addNew").addEventListener("click", () => openEdit(null));
+  $("#regenOg").addEventListener("click", async () => {
+    if (S.busy) return;
+    const b = $("#regenOg"); b.disabled = true; toast("Preview ban raha hai...");
+    try { await makeOg(); toast("Preview update ho gaya. WhatsApp me naya dikhne me thoda time lagta hai."); }
+    catch (e) { toast(explain(e)); }
+    b.disabled = false;
+  });
   $("#pfCancel").addEventListener("click", () => { if (!S.busy) showHome(""); });
   $("#editor").addEventListener("submit", e => { e.preventDefault(); save(); });
   $("#pfPrice").addEventListener("input", renderDisc);
@@ -254,6 +297,8 @@
       if ((t.dataset.pcat === "Kids") !== (S.cur.category === "Kids")) S.cur.sizes = [];
       S.cur.category = t.dataset.pcat; renderCat(); renderSizes();
     }
+    else if (t.dataset.pdel) { S.cur.photos.splice(+t.dataset.pdel, 1); renderPhoto(); }
+    else if (t.dataset.pfirst) { const x = S.cur.photos.splice(+t.dataset.pfirst, 1)[0]; S.cur.photos.unshift(x); renderPhoto(); }
     else if (t.dataset.psize) {
       const s = t.dataset.psize, i = S.cur.sizes.indexOf(s);
       i >= 0 ? S.cur.sizes.splice(i, 1) : S.cur.sizes.push(s); renderSizes();
@@ -265,12 +310,15 @@
     $("#pfCustom").value = ""; renderSizes();
   });
   $("#pfCustom").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("#pfAddSize").click(); } });
-  $("#phRemove").addEventListener("click", () => { S.cur.img = ""; S.cur.newPhoto = null; renderPhoto(); });
   $("#pfPhoto").addEventListener("change", async e => {
-    const f = e.target.files && e.target.files[0]; e.target.value = "";
-    if (!f) return;
-    try { S.cur.newPhoto = await fileToJpeg(f); renderPhoto(); }
-    catch (err) { toast("Ye photo khul nahi payi. JPG ya PNG try karo."); }
+    const files = Array.from(e.target.files || []); e.target.value = "";
+    if (!files.length) return;
+    const room = MAXP - S.cur.photos.length;
+    if (files.length > room) toast("Sirf " + MAXP + " photo ho sakti hain");
+    for (const f of files.slice(0, room)) {
+      try { const data = await fileToJpeg(f); S.cur.photos.push({ data, src: data }); renderPhoto(); }
+      catch (err) { toast("Ek photo khul nahi payi. JPG ya PNG try karo."); }
+    }
   });
   $("#pfDelete").addEventListener("click", () => {
     if (S.busy) return;
@@ -286,7 +334,7 @@
     $("#noticeLink").href = $("#storeLink").href;
     const token = store.get("rudra-admin-token"), repo = store.get("rudra-admin-repo");
     if (token && repo) {
-      try { await connect(repo, token); showHome(""); return; }
+      try { await connect(repo, token); showHome(""); afterConnect(); return; }
       catch (e) {
         if (e.status === 401) store.del("rudra-admin-token");
         const err = $("#setupErr"); err.textContent = explain(e); err.hidden = false;
