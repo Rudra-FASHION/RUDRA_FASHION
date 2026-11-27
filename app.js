@@ -1,7 +1,9 @@
   // ---- Settings: change these ----
   const CONFIG = {
     whatsapp: "919251073424",          // country code first, no + sign
-    upi: "vihanthakur021x@ptyes",
+    upi: "BHARATPE2O0U0F9X3V74933@unitype",
+    upiAppButtons: true,               // merchant UPI ID is set, app buttons work
+    showQr: false,                     // true to also show a QR code at checkout
     freeDeliveryAbove: 699,
     shopName: "Rudra Fashion"
   };
@@ -164,6 +166,93 @@
   $("#lbClose").addEventListener("click", closeLb);
   $("#lbTrack").addEventListener("click", e => { if (e.target.tagName !== "IMG") closeLb(); });
 
+  // ---- Tiny QR code maker (byte mode, level M, up to version 6) ----
+  function qrMatrix(text, forceMask) {
+    const bytes = Array.from(new TextEncoder().encode(text));
+    const DC = [16, 28, 44, 64, 86, 108], EC = [10, 16, 26, 18, 24, 16], NB = [1, 1, 1, 2, 2, 4];
+    let v = 0; while (v < 6 && bytes.length + 2 > DC[v]) v++;
+    if (v === 6) return null;
+    const ver = v + 1, size = 17 + 4 * ver, dc = DC[v], ecl = EC[v], nb = NB[v];
+    // data bits
+    const bits = [];
+    const put = (val, n) => { for (let i = n - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+    put(4, 4); put(bytes.length, 8); bytes.forEach(b => put(b, 8));
+    for (let i = 0; i < 4 && bits.length < dc * 8; i++) bits.push(0);
+    while (bits.length % 8) bits.push(0);
+    const cw = []; for (let i = 0; i < bits.length; i += 8) cw.push(parseInt(bits.slice(i, i + 8).join(""), 2));
+    for (let p = 0xEC; cw.length < dc; p ^= 0xEC ^ 0x11) cw.push(p);
+    // Reed-Solomon
+    const exp = new Array(512), log = new Array(256); let x = 1;
+    for (let i = 0; i < 255; i++) { exp[i] = x; log[x] = i; x <<= 1; if (x & 256) x ^= 0x11D; }
+    for (let i = 255; i < 512; i++) exp[i] = exp[i - 255];
+    const mul = (a, b) => (a && b) ? exp[log[a] + log[b]] : 0;
+    let gen = [1];
+    for (let i = 0; i < ecl; i++) { const n = new Array(gen.length + 1).fill(0); gen.forEach((c, j) => { n[j] ^= c; n[j + 1] ^= mul(c, exp[i]); }); gen = n; }
+    const rs = data => { const r = new Array(ecl).fill(0); data.forEach(d => { const f = d ^ r.shift(); r.push(0); gen.slice(1).forEach((g, i) => { r[i] ^= mul(g, f); }); }); return r; };
+    const shortLen = Math.floor(dc / nb), longCount = dc % nb, blocks = [];
+    for (let i = 0, k = 0; i < nb; i++) { const len = shortLen + (i >= nb - longCount ? 1 : 0); const d = cw.slice(k, k + len); k += len; blocks.push({ d, e: rs(d) }); }
+    const all = [];
+    for (let i = 0; i <= shortLen; i++) blocks.forEach(b => { if (i < b.d.length) all.push(b.d[i]); });
+    for (let i = 0; i < ecl; i++) blocks.forEach(b => all.push(b.e[i]));
+    // function patterns
+    const M = Array.from({ length: size }, () => new Array(size).fill(false));
+    const F = Array.from({ length: size }, () => new Array(size).fill(false));
+    const set = (cx, cy, dark) => { if (cx >= 0 && cy >= 0 && cx < size && cy < size) { M[cy][cx] = dark; F[cy][cx] = true; } };
+    for (let i = 0; i < size; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+    [[3, 3], [size - 4, 3], [3, size - 4]].forEach(([cx, cy]) => {
+      for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const d = Math.max(Math.abs(dx), Math.abs(dy)); set(cx + dx, cy + dy, d !== 2 && d !== 4); }
+    });
+    if (ver >= 2) { const c = size - 7; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(c + dx, c + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1); }
+    const fmt = mask => {
+      let rem = mask; for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+      const b = ((mask << 10) | rem) ^ 0x5412, bit = i => ((b >>> i) & 1) === 1;
+      for (let i = 0; i <= 5; i++) set(8, i, bit(i));
+      set(8, 7, bit(6)); set(8, 8, bit(7)); set(7, 8, bit(8));
+      for (let i = 9; i < 15; i++) set(14 - i, 8, bit(i));
+      for (let i = 0; i < 8; i++) set(size - 1 - i, 8, bit(i));
+      for (let i = 8; i < 15; i++) set(8, size - 15 + i, bit(i));
+      set(8, size - 8, true);
+    };
+    fmt(0);
+    // place data
+    let n = 0;
+    for (let right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) {
+        const cx = right - j, up = ((right + 1) & 2) === 0, cy = up ? size - 1 - vert : vert;
+        if (!F[cy][cx] && n < all.length * 8) { M[cy][cx] = ((all[n >>> 3] >>> (7 - (n & 7))) & 1) === 1; n++; }
+      }
+    }
+    const MASKS = [(i, j) => (i + j) % 2 === 0, (i, j) => j % 2 === 0, (i, j) => i % 3 === 0, (i, j) => (i + j) % 3 === 0,
+      (i, j) => (Math.floor(i / 3) + Math.floor(j / 2)) % 2 === 0, (i, j) => (i * j) % 2 + (i * j) % 3 === 0,
+      (i, j) => ((i * j) % 2 + (i * j) % 3) % 2 === 0, (i, j) => ((i + j) % 2 + (i * j) % 3) % 2 === 0];
+    const base = M.map(r => r.slice());
+    const apply = m => { for (let y = 0; y < size; y++) for (let cx = 0; cx < size; cx++) M[y][cx] = base[y][cx] !== (!F[y][cx] && MASKS[m](cx, y)); fmt(m); };
+    const penalty = () => {
+      let p = 0, dark = 0;
+      const lines = [];
+      for (let y = 0; y < size; y++) { lines.push(M[y].map(b => b ? "1" : "0").join("")); }
+      for (let cx = 0; cx < size; cx++) { lines.push(M.map(r => r[cx] ? "1" : "0").join("")); }
+      lines.forEach(s => {
+        const r = s.match(/0{5,}|1{5,}/g); if (r) r.forEach(t => { p += 3 + t.length - 5; });
+        for (let i = 0; i + 11 <= s.length; i++) { const w = s.substr(i, 11); if (w === "10111010000" || w === "00001011101") p += 40; }
+      });
+      for (let y = 0; y < size - 1; y++) for (let cx = 0; cx < size - 1; cx++) { const c = M[y][cx]; if (c === M[y][cx + 1] && c === M[y + 1][cx] && c === M[y + 1][cx + 1]) p += 3; }
+      M.forEach(r => r.forEach(b => { if (b) dark++; }));
+      return p + Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+    };
+    let best = 0, bestP = Infinity;
+    if (forceMask === undefined) { for (let m = 0; m < 8; m++) { apply(m); const p = penalty(); if (p < bestP) { bestP = p; best = m; } } } else best = forceMask;
+    apply(best);
+    return { size, modules: M };
+  }
+  function qrSvg(text) {
+    const q = qrMatrix(text); if (!q) return "";
+    let d = ""; q.modules.forEach((row, y) => row.forEach((b, x) => { if (b) d += "M" + (x + 4) + " " + (y + 4) + "h1v1h-1z"; }));
+    const s = q.size + 8;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${s} ${s}" shape-rendering="crispEdges" role="img" aria-label="UPI QR code"><rect width="${s}" height="${s}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+  }
+
   // ---- UPI app buttons ----
   const UA = navigator.userAgent, isAndroid = /android/i.test(UA), isIOS = /iphone|ipad|ipod/i.test(UA);
   const UPI_APPS = {
@@ -184,94 +273,24 @@
   function refreshUpi() {
     document.querySelectorAll(".upay-app").forEach(a => { a.href = subtotal() > 0 ? upiLink(a.dataset.upi) : "#"; });
     $("#orderIdText").textContent = state.orderId;
+    $(".upay-qr").hidden = !CONFIG.showQr;
+    $(".upay-apps").hidden = $("#upiAppsT").hidden = !CONFIG.upiAppButtons;
+    const sub = subtotal(), box = $("#upiQr");
+    $("#upiAmt").textContent = sub > 0 ? "Pay karna hai: " + inr(sub) : "";
+    if (sub > 0) {
+      const payload = "upi://pay?pa=" + CONFIG.upi + "&pn=" + encodeURIComponent(CONFIG.shopName) + "&am=" + sub + "&cu=INR&tn=" + encodeURIComponent("Order " + state.orderId);
+      box.innerHTML = qrSvg(payload) || "<span>QR nahi ban paya. Neeche UPI ID copy karo.</span>";
+    } else box.innerHTML = "<span>Pehle bag me kapda daalo, phir QR dikhega.</span>";
   }
   document.addEventListener("click", e => {
     const a = e.target.closest(".upay-app"); if (!a) return;
     if (!subtotal()) { e.preventDefault(); toast("Pehle bag me kapda daalo"); }
     else if (!isAndroid && !isIOS) { e.preventDefault(); toast("Ye button phone par chalta hai. UPI ID copy karke app me daalo."); }
+    else state.payTried = true;
   });
-
-  // ---- Order on WhatsApp ----
-  function fieldError(id, bad) { const f = $(id); f.classList.toggle("bad", bad); f.querySelector(".err").hidden = !bad; return bad; }
-
-  function sendOrder() {
-    const name = $("#custName").value.trim();
-    const phone = $("#custPhone").value.replace(/[\s-]/g, "").replace(/^(\+91|91|0)(?=\d{10}$)/, "");
-    const addr = $("#custAddress").value.trim();
-    const bad = [fieldError("#fName", name.length < 2), fieldError("#fPhone", !/^[6-9]\d{9}$/.test(phone)), fieldError("#fAddr", addr.length < 10)];
-    if (bad.some(Boolean)) { document.querySelector(".field.bad input")?.focus(); return; }
-
-    const pay = $("#payMode").value === "UPI" ? "UPI (screenshot to follow)" : "Cash on delivery";
-    const ref = state.orderId;
-    const rows = cartLines().map((i, n) => `${n + 1}. ${i.p.name} | Size ${i.size} | Qty ${i.qty} | ${inr(i.p.price * i.qty)}`).join("\n");
-    const msg = `*New order - Rudra Fashion*\nOrder ID: ${ref}\n\n${rows}\n\n*Total: ${inr(subtotal())}*\nPayment: ${pay}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${addr}`;
-    const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-    $("#waLink").href = url; $("#done").hidden = false;
-    window.open(url, "_blank");
-  }
-
-
-  // ---- Events ----
-  document.addEventListener("click", e => {
-    const t = e.target.closest("button, a");
-    if (!t) return;
-    if (t.dataset.slide) { const el = t.parentElement.querySelector(".slides"); if (el) el.scrollBy({ left: +t.dataset.slide * el.clientWidth, behavior: reduceMotion ? "auto" : "smooth" }); }
-    else if (t.dataset.zoom) openLb(t.dataset.zoom, +t.dataset.i || 0);
-    else if (t.dataset.lb) { const el = $("#lbTrack"); el.scrollBy({ left: +t.dataset.lb * el.clientWidth, behavior: reduceMotion ? "auto" : "smooth" }); }
-    else if (t.dataset.cat) setCategory(t.dataset.cat, t.classList.contains("arch"));
-    else if (t.dataset.nav) setCategory(t.dataset.nav, true);
-    else if (t.dataset.size) {
-      state.sel[t.dataset.id] = t.dataset.size;
-      t.parentElement.querySelectorAll(".size").forEach(b => b.setAttribute("aria-pressed", b === t));
-    }
-    else if (t.dataset.add) addToCart(t.dataset.add);
-    else if (t.dataset.q) {
-      const item = state.cart[+t.dataset.i]; item.qty += +t.dataset.q;
-      if (item.qty < 1) state.cart.splice(+t.dataset.i, 1);
-      renderCart();
-    }
-    else if (t.dataset.rm) { state.cart.splice(+t.dataset.rm, 1); renderCart(); }
+  // When the customer comes back from the UPI app, ask if payment is done
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && state.payTried) { state.payTried = false; $("#paidAsk").hidden = false; $("#paidAsk").scrollIntoView({ block: "center" }); }
   });
-  $("#shopNow").addEventListener("click", e => { e.preventDefault(); $("#shop").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); });
-  $("#searchInput").addEventListener("input", e => { state.q = e.target.value; renderProducts(); });
-  $("#bagBtn").addEventListener("click", openCart);
-  $("#closeBtn").addEventListener("click", closeCart);
-  $("#overlay").addEventListener("click", closeCart);
-  document.addEventListener("keydown", e => {
-    if (!$("#lb").hidden) {
-      if (e.key === "Escape") closeLb();
-      else if (e.key === "ArrowRight") $("#lbTrack").scrollBy({ left: $("#lbTrack").clientWidth, behavior: "smooth" });
-      else if (e.key === "ArrowLeft") $("#lbTrack").scrollBy({ left: -$("#lbTrack").clientWidth, behavior: "smooth" });
-      return;
-    }
-    if (e.key === "Escape" && $("#drawer").classList.contains("open")) closeCart();
-  });
-  $("#payMode").addEventListener("change", e => { $("#upiBox").hidden = e.target.value !== "UPI"; });
-  $("#orderBtn").addEventListener("click", sendOrder);
-  $("#copyUpi").addEventListener("click", () => {
-    const done = () => toast("UPI ID copied");
-    const fail = () => { const r = document.createRange(); r.selectNodeContents($("#upiText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Press and hold to copy"); };
-    navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(CONFIG.upi).then(done, fail) : fail();
-  });
-
-  // ---- Start ----
-  const waBase = `https://wa.me/${CONFIG.whatsapp}`;
-  $("#heroWa").href = waBase + "?text=" + encodeURIComponent("Hi Rudra Fashion, I need help choosing an outfit.");
-  $("#footWa").href = waBase;
-  $("#upiText").textContent = CONFIG.upi;
-  renderChips(); renderCart();
-  $("#productGrid").innerHTML = '<div class="empty">Collection load ho raha hai...</div>';
-
-  async function loadProducts() {
-    try {
-      const r = await fetch("products.json?v=" + Date.now(), { cache: "no-store" });
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      const d = await r.json();
-      products = Array.isArray(d.products) ? d.products : [];
-    } catch (e) {
-      products = FALLBACK;
-    }
-    renderArches(); renderChips(); renderProducts(); renderCart();
-  }
-  loadProducts();
-    
+  $("#paidYes").addEventListener("click", () => { $("#paidAsk").hidden = true; sendOrder(); });
+  $("#paidNo").addEventListener("click", () => { $("#paidAsk").hidden 
