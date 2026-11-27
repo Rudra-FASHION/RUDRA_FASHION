@@ -1,6 +1,24 @@
 {
   "products": [
     {
+      "id": "pmwyg5l1p",
+      "name": "Men's Neutral Beige Baggy T shirt with Street Act",
+      "category": "Men",
+      "price": 359,
+      "mrp": 0,
+      "desc": "Upgrade your streetwear style with this trendy beige oversized T-shirt. Featuring a unique graphic print, relaxed fit and stylish design. Perfect for everyday w",
+      "sizes": [
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "type": "tee",
+      "tone": "#d8d0c0",
+      "img": "images/pmwyg5l1p-mwygc8o2.jpg",
+      "soldOut": false
+    },
+    {
       "id": "pmwyfanww",
       "name": "Men's Stylish Printed Full sleeve Shirt",
       "category": "Men",
@@ -147,5 +165,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T03:34:42.314Z"
+  "updated": "2026-11-27T03:59:04.551Z"
 }
