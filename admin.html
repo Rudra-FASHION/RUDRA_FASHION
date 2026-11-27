@@ -9,7 +9,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="admin-app.json">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="admin.css?v=3">
+<style>
+  .pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .pcell, .padd { position: relative; aspect-ratio: 4 / 5; border-radius: 12px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); }
+  .pcell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pfirst { position: absolute; left: 6px; bottom: 6px; background: var(--brass); color: var(--brass-ink); font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+  .pmk { position: absolute; left: 6px; right: 6px; bottom: 6px; min-height: 30px; border: 0; border-radius: 6px; background: rgba(0,0,0,.65); color: #fff; font-size: 11px; font-weight: 700; }
+  .pdel { position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(0,0,0,.7); color: #fff; font-size: 20px; line-height: 1; padding: 0 0 2px; }
+  .padd { display: grid; place-content: center; justify-items: center; gap: 2px; border-style: dashed; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 700; text-align: center; }
+  .padd b { font-size: 30px; line-height: 1; color: var(--brass); font-weight: 400; }
+  .pcount { color: var(--muted); font-size: 12.5px; }
+  .tools { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); display: grid; gap: 8px; justify-items: start; }
+</style>
 </head>
 <body>
 <header>
@@ -56,22 +71,21 @@
     <button class="btn btn-primary block" id="addNew" type="button">+ Naya kapda jodo</button>
     <p class="count" id="count"></p>
     <div id="list"></div>
+    <div class="tools">
+      <button class="mini" id="regenOg" type="button">WhatsApp preview naya banao</button>
+      <p class="hint">Link bhejne par WhatsApp me jo shop ka naam aur photo dikhti hai, use naye kapdon ke saath update karta hai.</p>
+    </div>
   </section>
 
   <!-- Add / edit -->
   <form id="editor" class="stack" hidden novalidate>
     <h2 class="a-title" id="editTitle">Naya kapda</h2>
     <div class="field">
-      <span class="label">Photo</span>
-      <div class="photo-row">
-        <div class="ph-box" id="phBox"></div>
-        <div class="ph-side">
-          <label class="btn btn-ghost small" for="pfPhoto">Photo chuno</label>
-          <input id="pfPhoto" type="file" accept="image/*" class="vh">
-          <button class="btn btn-ghost small" id="phRemove" type="button">Photo hatao</button>
-          <p class="hint">Photo seedhi (portrait) ho aur kapda beech me ho. Automatic chhoti ho jati hai.</p>
-        </div>
-      </div>
+      <span class="label">Photos (kam se kam 4, zyada se zyada 6)</span>
+      <div class="pgrid" id="pgrid"></div>
+      <input id="pfPhoto" type="file" accept="image/*" multiple class="vh">
+      <p class="pcount" id="pcount"></p>
+      <p class="hint">Pehli photo store par sabse pehle dikhti hai. Seedhi (portrait) photo lo: aage se, peeche se, fabric close-up aur pehne hue. Photo automatic chhoti ho jati hai.</p>
     </div>
     <div class="field"><label for="pfName">Naam</label><input id="pfName" type="text" maxlength="80" placeholder="Jaise: Men's Cotton Polo T-shirt"></div>
     <div class="field">
@@ -106,6 +120,7 @@
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="admin.js?v=3"></script>
+<script src="assets.js?v=1"></script>
+<script src="admin.js?v=4"></script>
 </body>
 </html>
