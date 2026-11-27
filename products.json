@@ -1,6 +1,31 @@
 {
   "products": [
     {
+      "id": "pmwz283rj",
+      "name": "Ladies Tank top Western wear  top for women  Low asp",
+      "category": "Women",
+      "price": 249,
+      "mrp": 499,
+      "desc": "Black & White Ribbed Crop Top Combo (Pack of 2)\nSoft aur stretchable cotton fabric se bane ye sleeveless scoop-neck crop tops daily wear aur outings ke liye per",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "type": "kurti",
+      "tone": "#8c2f45",
+      "images": [
+        "images/pmwz283rj-mwz2bwrt0.jpg",
+        "images/pmwz283rj-mwz2bwrt1.jpg",
+        "images/pmwz283rj-mwz2bwrt2.jpg",
+        "images/pmwz283rj-mwz2bwrt3.jpg",
+        "images/pmwz283rj-mwz2bwrt4.jpg"
+      ],
+      "img": "images/pmwz283rj-mwz2bwrt0.jpg",
+      "soldOut": false
+    },
+    {
       "id": "pmwyt4y6z",
       "name": "Men's Gray colour Oversized Fit Calligraphy Graphic Print Drop-Shoulder T-Shirt",
       "category": "Men",
@@ -200,5 +225,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T13:53:22.955Z"
+  "updated": "2026-11-27T14:15:45.899Z"
 }
