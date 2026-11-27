@@ -41,6 +41,11 @@
       ],
       "type": "tee",
       "tone": "#d8d0c0",
+      "images": [
+        "images/pmwygr1ah-mwyh2f35.jpg",
+        "images/pmwygr1ah-mwysf7up1.jpg",
+        "images/pmwygr1ah-mwysf7up2.jpg"
+      ],
       "img": "images/pmwygr1ah-mwyh2f35.jpg",
       "soldOut": false
     },
@@ -135,5 +140,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-27T09:32:16.393Z"
+  "updated": "2026-11-27T09:37:19.574Z"
 }
