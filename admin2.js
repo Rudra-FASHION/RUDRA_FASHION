@@ -30,17 +30,20 @@
   async function load() {
     try {
       const { data } = await readSettings();
-      $("#cfCod").value = data.codFee > 0 ? data.codFee : ""; $("#cfFree").value = data.freeAbove >= 0 ? data.freeAbove : 699;
+      $("#cfCod").value = data.codFee > 0 ? data.codFee : ""; $("#cfFree").value = data.freeAbove >= 0 ? data.freeAbove : 699; $("#cfAdv").value = data.codAdvance > 0 ? data.codAdvance : "";
       $("#cfApi").value = data.api || ""; $("#cfPass").value = store.get("rudra-admin-pw") || "";
       showState(); if (api() && $("#cfPass").value) orders();
     } catch (e) { msg("Settings nahi khuli. Internet check karo.", true); }
   }
+  $("#cfSaveDel").insertAdjacentHTML("beforebegin", '<div class="field"><label for="cfAdv">COD advance (₹) har COD order par, 0 = advance nahi</label><input id="cfAdv" type="number" inputmode="numeric" min="0" placeholder="20"></div><p class="hint">Ye advance kapde ke daam me nahi katta, alag hota hai. Customer Razorpay se pehle deta hai, tabhi COD order confirm hota hai. Kapde ke paise delivery par.</p>');
   $("#cfg").addEventListener("toggle", () => { if ($("#cfg").open && S.token) load(); });
   $("#cfSaveDel").addEventListener("click", async () => {
     msg("Save ho raha hai...");
     try {
-      await saveSettings({ codFee: Math.max(0, Math.round(+$("#cfCod").value || 0)), freeAbove: Math.max(0, Math.round(+$("#cfFree").value || 0)) });
-      msg("Delivery save ho gaya. Store me 1-2 minute me dikhega.");
+      const adv = Math.max(0, Math.round(+$("#cfAdv").value || 0));
+      if (adv > 5000) return msg("Advance 5000 se zyada nahi ho sakta.", true);
+      const s = await saveSettings({ codFee: Math.max(0, Math.round(+$("#cfCod").value || 0)), freeAbove: Math.max(0, Math.round(+$("#cfFree").value || 0)), codAdvance: adv });
+      msg(adv > 0 && !s.api ? "Save ho gaya, par advance tabhi chalega jab neeche Razorpay save ho." : "Save ho gaya. Store me 1-2 minute me dikhega.");
     } catch (e) { msg("Save nahi hua. Dobara try karo.", true); }
   });
   $("#cfSaveKeys").addEventListener("click", async () => {
@@ -63,16 +66,17 @@
   st.textContent = ".ord .ln{display:flex;gap:10px;align-items:center}.ord .ln img{width:56px;height:70px;object-fit:cover;border-radius:8px;flex:none;background:#26211c}.ord .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:800;font-size:13px;background:#1f8a4c;color:#fff}.ord .badge.created{background:#b7791f}.ord .badge.cancelled{background:#b23b29}.ord .addr{background:rgba(127,127,127,.15);border-radius:8px;padding:8px}.ord a.mini{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}";
   document.head.appendChild(st);
   const pimg = n => { const p = S.products.find(x => x.name === n), u = p && ((p.images && p.images[0]) || p.img) || ""; return /^images\/[A-Za-z0-9._-]+$/.test(u) ? u : ""; };
-  const thanks = o => `Namaste ${o.cust.name}, aapka order (Order ID: ${o.ref || o.id}) hume mil gaya hai. Hum jaldi aap tak pahuchayenge. Rudra Fashion ki website se shopping karne ke liye dhanyawad! 7 din ke andar aapka order aap tak pahunch jayega, kripya order lene ke liye taiyar rahein.`;
+  const thanks = o => `Namaste ${o.cust.name}, aapka order (Order ID: ${o.ref || o.id}) hume mil gaya hai. Hum jaldi aap tak pahuchayenge.${o.type === "cod" ? " Delivery par " + inr(o.due) + " dena hoga." : ""} Rudra Fashion ki website se shopping karne ke liye dhanyawad! 7 din ke andar aapka order aap tak pahunch jayega, kripya order lene ke liye taiyar rahein.`;
   async function orders() {
     const box = $("#ordList"); box.textContent = "Load ho raha hai...";
     try {
       const { orders } = await srv("/admin/orders");
       box.innerHTML = orders.length ? orders.map(o => {
-        const ph = String(o.cust.phone).replace(/\D/g, ""), paid = ["paid", "dispatched", "delivered"].includes(o.status);
+        const ph = String(o.cust.phone).replace(/\D/g, ""), paid = ["paid", "dispatched", "delivered"].includes(o.status), cod = o.type === "cod";
         return `
         <div class="ord ${esc(o.status)}">
-          <div><span class="badge ${esc(o.status)}">${esc(LABEL[o.status] || o.status)}</span> <b>${inr(o.subtotal)}</b> · Order ${esc(o.ref || o.id)}</div>
+          <div><span class="badge ${esc(o.status)}">${esc((cod ? "COD · " : "") + (cod && o.status === "paid" ? "Advance " + inr(o.advance) + " mila ✓" : LABEL[o.status] || o.status))}</span> <b>${inr(o.subtotal)}</b> · Order ${esc(o.ref || o.id)}</div>
+          ${cod ? `<div class="addr"><b>Delivery par lena hai: ${inr(o.due)}</b><br><small>Kapde ${inr(o.subtotal)}${o.due > o.subtotal ? " + delivery " + inr(o.due - o.subtotal) : ""}. Advance ${inr(o.advance)} alag mil chuka (isme nahi jodna).</small></div>` : ""}
           <small>${esc(new Date(o.createdAt).toLocaleString("en-IN"))}${o.paymentId ? " · Payment ID: " + esc(o.paymentId) : ""}</small>
           ${(o.lines || []).map(l => { const s = pimg(l.name); return `<div class="ln">${s ? `<img src="${esc(s)}" alt="">` : ""}<div><b>${esc(l.name)}</b><br>Size: <b>${esc(l.size)}</b> · Qty ${esc(l.qty)} · ${inr(l.price * l.qty)}</div></div>`; }).join("")}
           <div class="addr"><b>${esc(o.cust.name)}</b> · <a href="tel:+91${esc(ph)}">${esc(ph)}</a><br>${esc(o.cust.addr)}</div>
