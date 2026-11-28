@@ -85,6 +85,7 @@
           ${paid ? `<a class="mini" href="https://wa.me/91${esc(ph)}?text=${encodeURIComponent(thanks(o))}" target="_blank" rel="noopener">Customer ko WhatsApp par dhanyawad bhejo</a>` : ""}
           ${o.status === "paid" ? `<button class="mini" type="button" data-os="dispatched" data-oid="${esc(o.id)}">Dispatched mark karo</button>` : ""}
           ${o.status === "dispatched" ? `<button class="mini" type="button" data-os="delivered" data-oid="${esc(o.id)}">Delivered mark karo</button>` : ""}
+          ${["created", "cancelled", "delivered"].includes(o.status) ? `<button class="mini" type="button" data-del="1" data-oid="${esc(o.id)}">Ye order list se hatao</button>` : ""}
         </div>`; }).join("") : "Abhi koi online order nahi aaya.";
       if (more) box.insertAdjacentHTML("beforeend", html); else box.innerHTML = html;
     } catch (e) { if (!more) box.textContent = e.message; else toast(e.message); }
@@ -99,8 +100,16 @@
     b.disabled = false; b.textContent = "Razorpay se check karo";
   });
   $("#ordList").addEventListener("click", async e => {
+    const d = e.target.closest("[data-del]");
+    if (d) {
+      if (!confirm("Is order ko list se hamesha ke liye hatana hai?")) return;
+      d.disabled = true;
+      try { await srv("/admin/delete", "POST", { id: d.dataset.oid }); d.closest(".ord").remove(); msg("Order hata diya."); } catch (x) { d.disabled = false; msg(x.message, true); orders(); }
+      return;
+    }
     const b = e.target.closest("[data-os]"); if (!b) return;
     b.disabled = true;
     try { await srv("/admin/status", "POST", { id: b.dataset.oid, status: b.dataset.os }); orders(); } catch (x) { b.disabled = false; msg(x.message, true); }
   });
 })();
+            
