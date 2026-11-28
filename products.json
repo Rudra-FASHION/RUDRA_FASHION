@@ -1,6 +1,30 @@
 {
   "products": [
     {
+      "id": "pmx0dvs8b",
+      "name": "Perfect Combo: 'Fluttering Wings Beauty' Tee + Wide-Leg Joggers",
+      "category": "Women",
+      "price": 409,
+      "mrp": 539,
+      "desc": "🖤 Upgrade your casual wardrobe with the Perfect Combo from RUDRA FASHION! 🤍✨",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "type": "kurti",
+      "tone": "#8c2f45",
+      "images": [
+        "images/pmx0dvs8b-mx0dz4b90.jpg",
+        "images/pmx0dvs8b-mx0dz4b91.jpg",
+        "images/pmx0dvs8b-mx0dz4b92.jpg",
+        "images/pmx0dvs8b-mx0dz4b93.jpg"
+      ],
+      "img": "images/pmx0dvs8b-mx0dz4b90.jpg",
+      "soldOut": false
+    },
+    {
       "id": "pmx0d9vuq",
       "name": "Chic Monochrome Combo: Women's Relaxed Streetwear Set — RUDRA FASHION",
       "category": "Women",
@@ -221,5 +245,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-28T12:13:15.276Z"
+  "updated": "2026-11-28T12:28:31.742Z"
 }
