@@ -206,25 +206,7 @@
       "tone": "#3f5f7d",
       "img": "",
       "soldOut": false
-    },
-    {
-      "id": "p6",
-      "name": "Kids Cotton Hoodie & Jogger Set",
-      "category": "Kids",
-      "price": 599,
-      "mrp": 1199,
-      "desc": "Soft fleece winter tracksuit set for active kids.",
-      "sizes": [
-        "2-4Y",
-        "4-6Y",
-        "6-8Y",
-        "8-10Y"
-      ],
-      "type": "hoodie",
-      "tone": "#b5533a",
-      "img": "",
-      "soldOut": false
     }
   ],
-  "updated": "2026-11-27T20:46:46.566Z"
+  "updated": "2026-11-28T07:20:11.025Z"
 }
