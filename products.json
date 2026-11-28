@@ -170,25 +170,7 @@
       ],
       "img": "images/pmwyfanww-mwyfgxl7.jpg",
       "soldOut": false
-    },
-    {
-      "id": "p5",
-      "name": "Women's Trendy Co-Ord Set",
-      "category": "Women",
-      "price": 749,
-      "mrp": 1499,
-      "desc": "Stylish western two-piece top and trouser set for casual outings.",
-      "sizes": [
-        "S",
-        "M",
-        "L",
-        "XL"
-      ],
-      "type": "coord",
-      "tone": "#3f5f7d",
-      "img": "",
-      "soldOut": false
     }
   ],
-  "updated": "2026-11-28T07:26:27.939Z"
+  "updated": "2026-11-28T07:26:43.291Z"
 }
