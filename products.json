@@ -1,6 +1,30 @@
 {
   "products": [
     {
+      "id": "pmx0d9vuq",
+      "name": "Chic Monochrome Combo: Women's Relaxed Streetwear Set — RUDRA FASHION",
+      "category": "Women",
+      "price": 419,
+      "mrp": 539,
+      "desc": "🦋🖤 Upgrade your casual wardrobe with the Perfect Combo from RUDRA FASHION! 🤍✨\nStyle meets all-day comfort with our Black 'Fluttering Wings Beauty' Oversized",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "type": "kurti",
+      "tone": "#8c2f45",
+      "images": [
+        "images/pmx0d9vuq-mx0df9tb0.jpg",
+        "images/pmx0d9vuq-mx0df9tb1.jpg",
+        "images/pmx0d9vuq-mx0df9tb2.jpg",
+        "images/pmx0d9vuq-mx0df9tb3.jpg"
+      ],
+      "img": "images/pmx0d9vuq-mx0df9tb0.jpg",
+      "soldOut": false
+    },
+    {
       "id": "pmx0d04yc",
       "name": "Trending Now: Women's Relaxed Fit Black Co-Ord Set — RUDRA FASHION",
       "category": "Women",
@@ -197,5 +221,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-28T12:04:10.385Z"
+  "updated": "2026-11-28T12:13:15.276Z"
 }
