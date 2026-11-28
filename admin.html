@@ -25,6 +25,13 @@
   .pcount { color: var(--muted); font-size: 12.5px; }
   .head { flex-wrap: wrap; gap: 6px 12px; padding-block: 8px; }
   .brand { font-size: 17px; letter-spacing: .06em; }
+  .cfg { margin: 14px 0; border: 1px solid var(--line); border-radius: 12px; padding: 4px 14px 14px; background: var(--surface); }
+  .cfg summary { min-height: 44px; display: flex; align-items: center; font-weight: 700; cursor: pointer; }
+  .cfg h3 { margin: 18px 0 6px; font-size: 15px; }
+  .cfg input { width: 100%; min-width: 0; }
+  .ord { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-top: 10px; display: grid; gap: 4px; font-size: 14px; overflow-wrap: anywhere; }
+  .ord.paid { border-color: #1f8a4c; } .ord .ost { font-weight: 800; }
+  .ord.paid .ost { color: #1f8a4c; }
   .hbtns { gap: 6px; }
   .hbtns .mini { padding: 0 10px; font-size: 12px; }
   .field input.vh { width: 1px; height: 1px; padding: 0; border: 0; }
@@ -75,6 +82,29 @@
       <span id="noticeText"></span><a id="noticeLink" href="./" target="_blank" rel="noopener">Store kholo</a>
     </div>
     <button class="btn btn-primary block" id="addNew" type="button">+ Naya kapda jodo</button>
+    <details class="cfg" id="cfg">
+      <summary>Settings: delivery, Razorpay aur online orders</summary>
+      <h3>Delivery charge</h3>
+      <p class="hint">Ye charge sirf Cash on delivery par lagta hai. Online payment par delivery hamesha free.</p>
+      <div class="two">
+        <div class="field"><label for="cfCod">COD delivery charge (₹)</label><input id="cfCod" type="number" inputmode="numeric" min="0" placeholder="60"></div>
+        <div class="field"><label for="cfFree">Free delivery (₹ se upar)</label><input id="cfFree" type="number" inputmode="numeric" min="0" placeholder="699"></div>
+      </div>
+      <button class="mini" id="cfSaveDel" type="button">Delivery save karo</button>
+      <h3>Razorpay (online payment)</h3>
+      <p class="hint">Pehle TEST keys (rzp_test_) se try karo. Key Secret sirf aapke payment server me jata hai, website ya GitHub me nahi.</p>
+      <div class="field"><label for="cfApi">Payment server ka link</label><input id="cfApi" type="url" placeholder="https://rudra-pay.aapka-naam.workers.dev"></div>
+      <div class="field"><label for="cfPass">Admin password (server ka)</label><input id="cfPass" type="password" autocomplete="off"></div>
+      <div class="field"><label for="cfKey">Razorpay Key ID</label><input id="cfKey" type="text" autocomplete="off" placeholder="rzp_test_xxxxxxxx"></div>
+      <div class="field"><label for="cfSecret">Razorpay Key Secret</label><input id="cfSecret" type="password" autocomplete="off" placeholder="Save ke baad yahan khali dikhega"></div>
+      <div class="field"><label for="cfWh">Webhook secret (zaroori nahi, par achha hai)</label><input id="cfWh" type="password" autocomplete="off"></div>
+      <button class="mini" id="cfSaveKeys" type="button">Razorpay save karo</button>
+      <p class="hint" id="cfState"></p>
+      <p class="status" id="cfMsg" hidden></p>
+      <h3>Online orders</h3>
+      <button class="mini" id="ordLoad" type="button">Orders dekho</button>
+      <div id="ordList"></div>
+    </details>
     <p class="count" id="count"></p>
     <div id="list"></div>
     <div class="tools">
@@ -107,8 +137,6 @@
       <div class="field"><label for="pfMrp">MRP (₹), zaroori nahi</label><input id="pfMrp" type="number" inputmode="numeric" min="1" placeholder="999"></div>
     </div>
     <p class="hint" id="discHint"></p>
-    <div class="field"><label for="pfShip">Is kapde ka delivery charge (₹), free ho to 0</label><input id="pfShip" type="number" inputmode="numeric" min="0" placeholder="0"></div>
-    <p class="hint">Ye charge har ek piece par lagta hai. Customer ka order ₹699 se upar ho to delivery free ho jati hai.</p>
     <div class="field"><label for="pfDesc">Description</label><textarea id="pfDesc" maxlength="160" placeholder="Fabric, fit, kiske liye hai"></textarea></div>
     <div class="field">
       <span class="label">Sizes jo available hain</span>
@@ -129,6 +157,7 @@
 <div class="toast" id="toast" role="status"></div>
 
 <script src="assets.js?v=1"></script>
-<script src="admin.js?v=5"></script>
+<script src="admin.js?v=6"></script>
+<script src="admin2.js?v=1"></script>
 </body>
 </html>
