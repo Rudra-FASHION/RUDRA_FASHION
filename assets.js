@@ -41,7 +41,7 @@
 
     x.textBaseline = "alphabetic"; x.textAlign = "left";
     x.fillStyle = "#c9a25f"; x.font = "800 24px " + SANS; if ("letterSpacing" in x) x.letterSpacing = "6px";
-    x.fillText("MEN  ·  WOMEN  ·  KIDS", 70, 150);
+    x.fillText("MEN  ·  WOMEN", 70, 150);
     if ("letterSpacing" in x) x.letterSpacing = "8px";
     let fs = 138; x.font = "700 " + fs + "px " + SERIF;
     while (x.measureText("FASHION").width > 540 && fs > 60) { fs -= 4; x.font = "700 " + fs + "px " + SERIF; }
@@ -65,4 +65,4 @@
       x.strokeStyle = "#c9a25f"; x.lineWidth = 2; archPath(x, X, Y, TW, TH); x.stroke();
     }
     return c.toDataURL("image/jpeg", 0.86).split(",")[1];
-          }
+  }
