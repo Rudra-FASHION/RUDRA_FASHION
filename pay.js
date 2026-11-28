@@ -29,7 +29,7 @@ function showPaid(ref, rows, name, phone, addr, tot, verified) {
   if (!m) { m = document.createElement("div"); m.id = "paidMsg"; m.className = "done"; $("#done").before(m); }
   const wa = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(`*Paid order - Rudra Fashion*\nOrder ID: ${ref}\n\n${rows}\n\n*Paid online: ${inr(tot)}*\n\nName: ${name}\nPhone: ${phone}\nAddress: ${addr}`);
   m.innerHTML = verified
-    ? `<b>Payment mil gaya. Order confirmed ✓</b><br>Order ID: <b>${ref}</b>. Hum jaldi dispatch karenge.<br><a href="${wa}" target="_blank" rel="noopener">Order ki jaankari WhatsApp par bhi bhejo</a>`
+    ? `<b>Payment mil gaya. Order confirmed ✓</b><br>Aapka order hume mil gaya hai (Order ID: <b>${ref}</b>). Hum jaldi aap tak pahuchayenge. Hamari website se shopping karne ke liye dhanyawad! 7 din ke andar aapka order aap tak pahunch jayega, kripya order lene ke liye taiyar rahein.<br><a href="${wa}" target="_blank" rel="noopener">Order ki jaankari WhatsApp par bhi bhejo</a>`
     : `<b>Payment hua hai to chinta mat karo.</b> Order ID <b>${ref}</b> note kar lo. Confirmation me thoda time lag sakta hai.<br><a href="${wa}" target="_blank" rel="noopener">WhatsApp par Order ID bhejo</a>`;
   m.hidden = false; m.scrollIntoView({ block: "center" });
 }
