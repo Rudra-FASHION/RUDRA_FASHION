@@ -1,6 +1,31 @@
 {
   "products": [
     {
+      "id": "pmx0d04yc",
+      "name": "Trending Now: Women's Relaxed Fit Black Co-Ord Set — RUDRA FASHION",
+      "category": "Women",
+      "price": 449,
+      "mrp": 599,
+      "desc": "✨ Effortless comfort & bold style with RUDRA FASHION! ✨🖤\nUpgrade your everyday look with our Women's 'OVER THINKING' Black Co-Ord Set — soft, breathable fabric",
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "type": "kurti",
+      "tone": "#8c2f45",
+      "images": [
+        "images/pmx0d04yc-mx0d3s570.jpg",
+        "images/pmx0d04yc-mx0d3s571.jpg",
+        "images/pmx0d04yc-mx0d3s572.jpg",
+        "images/pmx0d04yc-mx0d3s573.jpg"
+      ],
+      "img": "images/pmx0d04yc-mx0d3s570.jpg",
+      "soldOut": false
+    },
+    {
       "id": "pmwz283rj",
       "name": "Ladies Tank top Western wear  top for women  Low asp",
       "category": "Women",
@@ -172,5 +197,5 @@
       "soldOut": false
     }
   ],
-  "updated": "2026-11-28T07:26:43.291Z"
+  "updated": "2026-11-28T12:04:10.385Z"
 }
