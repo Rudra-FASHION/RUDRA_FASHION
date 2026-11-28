@@ -4,6 +4,8 @@ upi: "BHARATPE2O0U0F9X3V74933@unitype",
 upiAppButtons: true,               // merchant UPI ID is set, app buttons work
 showQr: false,                     // true to also show a QR code at checkout
 freeDeliveryAbove: 699,
+codFee: 0,                         // delivery charge on cash on delivery only (set in admin)
+api: "",                           // payment server link (set in admin)
 shopName: "Rudra Fashion"
 };
 const FALLBACK = [];
@@ -94,7 +96,8 @@ return `<article class="card${p.soldOut ? " is-sold" : ""}">
 
 const cartLines = () => state.cart.map(i => ({ ...i, p: products.find(p => p.id === i.id) })).filter(i => i.p);
 const subtotal = () => cartLines().reduce((s, i) => s + i.p.price * i.qty, 0);
-const shipFee = () => subtotal() >= CONFIG.freeDeliveryAbove ? 0 : cartLines().reduce((s, i) => s + (+i.p.ship || 0) * i.qty, 0);
+// One delivery charge per order, on cash on delivery only. Online payment is always free delivery.
+const shipFee = () => $("#payMode").value === "COD" && subtotal() < CONFIG.freeDeliveryAbove ? CONFIG.codFee : 0;
 const total = () => subtotal() + shipFee();
 
 function renderCart() {
@@ -108,10 +111,10 @@ $("#cartItems").innerHTML = lines.length ? lines.map((i, idx) => `
 <button class="rm" type="button" data-rm="${idx}">Remove</button>
 </div>`).join("") : `<div class="cart-empty">Your bag is empty.<br>Pick a size and tap Add to bag.</div>`;
 
-const left = CONFIG.freeDeliveryAbove - sub;
+const left = CONFIG.freeDeliveryAbove - sub, cod = $("#payMode").value === "COD" && CONFIG.codFee > 0;
 const ship = $("#ship");
-ship.style.setProperty("--p", Math.min(100, sub / CONFIG.freeDeliveryAbove * 100) + "%");
-ship.innerHTML = sub === 0 ? `Free delivery on orders above ${inr(CONFIG.freeDeliveryAbove)}<i></i>`
+ship.style.setProperty("--p", (cod ? Math.min(100, sub / CONFIG.freeDeliveryAbove * 100) : 100) + "%");
+ship.innerHTML = !cod ? `Free delivery on this order<i></i>` : sub === 0 ? `Free delivery on orders above ${inr(CONFIG.freeDeliveryAbove)}<i></i>`
 : left > 0 ? `Add ${inr(left)} more for free delivery<i></i>` : `You have free delivery on this order<i></i>`;
 
 $("#subTotal").textContent = inr(sub);
@@ -121,6 +124,7 @@ $("#orderBtn").disabled = lines.length === 0;
 $("#done").hidden = true;
 saveCart();
 if (typeof refreshUpi === "function") refreshUpi();
+if (typeof afterCart === "function") afterCart();
 }
 
 function addToCart(id) {
@@ -202,12 +206,17 @@ $("#paidNo").addEventListener("click", () => { $("#paidAsk").hidden = true; });
 
 function fieldError(id, bad) { const f = $(id); f.classList.toggle("bad", bad); f.querySelector(".err").hidden = !bad; return bad; }
 
-function sendOrder() {
+function cust() {
 const name = $("#custName").value.trim();
 const phone = $("#custPhone").value.replace(/[\s-]/g, "").replace(/^(\+91|91|0)(?=\d{10}$)/, "");
 const addr = $("#custAddress").value.trim();
 const bad = [fieldError("#fName", name.length < 2), fieldError("#fPhone", !/^[6-9]\d{9}$/.test(phone)), fieldError("#fAddr", addr.length < 10)];
-if (bad.some(Boolean)) { document.querySelector(".field.bad input")?.focus(); return; }
+if (bad.some(Boolean)) { document.querySelector(".field.bad input")?.focus(); return null; }
+return { name, phone, addr };
+}
+function sendOrder() {
+const c = cust(); if (!c) return;
+const { name, phone, addr } = c;
 
 const pay = $("#payMode").value === "UPI" ? "UPI (screenshot to follow)" : "Cash on delivery";
 const ref = state.orderId;
@@ -253,7 +262,7 @@ return;
 }
 if (e.key === "Escape" && $("#drawer").classList.contains("open")) closeCart();
 });
-$("#payMode").addEventListener("change", e => { $("#upiBox").hidden = e.target.value !== "UPI"; });
+$("#payMode").addEventListener("change", e => { $("#upiBox").hidden = e.target.value !== "UPI"; renderCart(); });
 $("#orderBtn").addEventListener("click", sendOrder);
 $("#copyUpi").addEventListener("click", () => {
 const done = () => toast("UPI ID copied");
@@ -277,7 +286,14 @@ products = Array.isArray(d.products) ? d.products : [];
 } catch (e) {
 products = FALLBACK;
 }
+try {
+const s = await (await fetch("settings.json?v=" + Date.now(), { cache: "no-store" })).json();
+if (/^https:\/\//.test(s.api || "")) CONFIG.api = s.api.replace(/\/+$/, "");
+if (s.codFee >= 0) CONFIG.codFee = +s.codFee;
+if (s.freeAbove >= 0) CONFIG.freeDeliveryAbove = +s.freeAbove;
+} catch (e) {}
+document.dispatchEvent(new Event("rf-settings"));
 renderArches(); renderChips(); renderProducts(); renderCart();
 }
 loadProducts();
-                                                                                      
+  
