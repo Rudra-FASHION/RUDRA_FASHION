@@ -32,7 +32,7 @@
       const { data } = await readSettings();
       $("#cfCod").value = data.codFee > 0 ? data.codFee : ""; $("#cfFree").value = data.freeAbove >= 0 ? data.freeAbove : 699;
       $("#cfApi").value = data.api || ""; $("#cfPass").value = store.get("rudra-admin-pw") || "";
-      showState();
+      showState(); if (api() && $("#cfPass").value) orders();
     } catch (e) { msg("Settings nahi khuli. Internet check karo.", true); }
   }
   $("#cfg").addEventListener("toggle", () => { if ($("#cfg").open && S.token) load(); });
@@ -59,19 +59,27 @@
     } catch (e) { msg(e.message || "Save nahi hua.", true); }
   });
   const LABEL = { paid: "Paid ✓", created: "Payment pending", dispatched: "Dispatched", delivered: "Delivered", cancelled: "Cancelled" };
+  const st = document.createElement("style");
+  st.textContent = ".ord .ln{display:flex;gap:10px;align-items:center}.ord .ln img{width:56px;height:70px;object-fit:cover;border-radius:8px;flex:none;background:#26211c}.ord .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:800;font-size:13px;background:#1f8a4c;color:#fff}.ord .badge.created{background:#b7791f}.ord .badge.cancelled{background:#b23b29}.ord .addr{background:rgba(127,127,127,.15);border-radius:8px;padding:8px}.ord a.mini{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}";
+  document.head.appendChild(st);
+  const pimg = n => { const p = S.products.find(x => x.name === n), u = p && ((p.images && p.images[0]) || p.img) || ""; return /^images\/[A-Za-z0-9._-]+$/.test(u) ? u : ""; };
+  const thanks = o => `Namaste ${o.cust.name}, aapka order (Order ID: ${o.ref || o.id}) hume mil gaya hai. Hum jaldi aap tak pahuchayenge. Rudra Fashion ki website se shopping karne ke liye dhanyawad! 7 din ke andar aapka order aap tak pahunch jayega, kripya order lene ke liye taiyar rahein.`;
   async function orders() {
     const box = $("#ordList"); box.textContent = "Load ho raha hai...";
     try {
       const { orders } = await srv("/admin/orders");
-      box.innerHTML = orders.length ? orders.map(o => `
+      box.innerHTML = orders.length ? orders.map(o => {
+        const ph = String(o.cust.phone).replace(/\D/g, ""), paid = ["paid", "dispatched", "delivered"].includes(o.status);
+        return `
         <div class="ord ${esc(o.status)}">
-          <div><b>${esc(o.ref || o.id)}</b> · ${inr(o.subtotal)} · <span class="ost">${esc(LABEL[o.status] || o.status)}</span></div>
-          <small>${esc(new Date(o.createdAt).toLocaleString("en-IN"))}</small>
-          <div>${(o.lines || []).map(l => esc(l.name + " (" + l.size + ") x" + l.qty)).join("<br>")}</div>
-          <div><b>${esc(o.cust.name)}</b> · <a href="https://wa.me/91${esc(o.cust.phone)}" target="_blank" rel="noopener">${esc(o.cust.phone)}</a><br>${esc(o.cust.addr)}</div>
+          <div><span class="badge ${esc(o.status)}">${esc(LABEL[o.status] || o.status)}</span> <b>${inr(o.subtotal)}</b> · Order ${esc(o.ref || o.id)}</div>
+          <small>${esc(new Date(o.createdAt).toLocaleString("en-IN"))}${o.paymentId ? " · Payment ID: " + esc(o.paymentId) : ""}</small>
+          ${(o.lines || []).map(l => { const s = pimg(l.name); return `<div class="ln">${s ? `<img src="${esc(s)}" alt="">` : ""}<div><b>${esc(l.name)}</b><br>Size: <b>${esc(l.size)}</b> · Qty ${esc(l.qty)} · ${inr(l.price * l.qty)}</div></div>`; }).join("")}
+          <div class="addr"><b>${esc(o.cust.name)}</b> · <a href="tel:+91${esc(ph)}">${esc(ph)}</a><br>${esc(o.cust.addr)}</div>
+          ${paid ? `<a class="mini" href="https://wa.me/91${esc(ph)}?text=${encodeURIComponent(thanks(o))}" target="_blank" rel="noopener">Customer ko WhatsApp par dhanyawad bhejo</a>` : ""}
           ${o.status === "paid" ? `<button class="mini" type="button" data-os="dispatched" data-oid="${esc(o.id)}">Dispatched mark karo</button>` : ""}
           ${o.status === "dispatched" ? `<button class="mini" type="button" data-os="delivered" data-oid="${esc(o.id)}">Delivered mark karo</button>` : ""}
-        </div>`).join("") : "Abhi koi online order nahi aaya.";
+        </div>`; }).join("") : "Abhi koi online order nahi aaya.";
     } catch (e) { box.textContent = e.message; }
   }
   $("#ordLoad").addEventListener("click", orders);
@@ -81,4 +89,3 @@
     try { await srv("/admin/status", "POST", { id: b.dataset.oid, status: b.dataset.os }); orders(); } catch (x) { b.disabled = false; }
   });
 })();
-                              
