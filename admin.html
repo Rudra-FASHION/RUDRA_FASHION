@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self'">
+<script>if(top!==self)top.location=self.location</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#100e0c">
@@ -102,8 +104,9 @@
       <p class="hint" id="cfState"></p>
       <p class="status" id="cfMsg" hidden></p>
       <h3>Online orders</h3>
-      <button class="mini" id="ordLoad" type="button">Orders dekho</button>
+      <button class="mini" id="ordLoad" type="button">Orders dekho</button> <button class="mini" id="ordSync" type="button">Razorpay se check karo</button>
       <div id="ordList"></div>
+      <button class="mini" id="ordMore" type="button" hidden>Aur purane orders</button>
     </details>
     <p class="count" id="count"></p>
     <div id="list"></div>
@@ -157,6 +160,7 @@
 
 <script src="assets.js?v=2"></script>
 <script src="admin.js?v=6"></script>
-<script src="admin2.js?v=1"></script>
+<script src="admin2.js?v=2"></script>
 </body>
-</html>
+  </html>
+  
