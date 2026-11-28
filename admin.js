@@ -7,8 +7,8 @@ get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
 set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
 del(k) { try { localStorage.removeItem(k); } catch (e) {} }
 };
-const SIZE_SETS = { Men: ["S", "M", "L", "XL", "XXL"], Women: ["S", "M", "L", "XL", "XXL"], Kids: ["2-4Y", "4-6Y", "6-8Y", "8-10Y", "10-12Y"] };
-const DEFAULT_LOOK = { Men: ["tee", "#d8d0c0"], Women: ["kurti", "#8c2f45"], Kids: ["hoodie", "#b5533a"] };
+const SIZE_SETS = { Men: ["S", "M", "L", "XL", "XXL"], Women: ["S", "M", "L", "XL", "XXL"] };
+const DEFAULT_LOOK = { Men: ["tee", "#d8d0c0"], Women: ["kurti", "#8c2f45"] };
 
 const S = { token: "", repo: "", branch: "main", products: [], thumbs: {}, cur: null, isNew: false, busy: false, delTimer: 0, delArm: null };
 
@@ -215,14 +215,14 @@ const background = fn => { bgChain = bgChain.then(fn).catch(() => {}); };
 async function putGenerated(path, b64, msg) { const f = await getFile(path); await putFile(path, b64, msg, f && f.sha); }
 async function makeOg() {
 const srcs = S.products.filter(p => allImgs(p).length).slice(0, 3).map(p => srcOf(allImgs(p)[0])).filter(Boolean);
-await putGenerated("og.jpg", await drawOg(srcs), "Update share preview");
+await putGenerated("og2.jpg", await drawOg(srcs), "Update share preview");
 }
 async function ensureAssets() {
 const made = [];
 for (const [path, size] of [["icons/icon-192.png", 192], ["icons/icon-512.png", 512]]) {
 if (!(await getFile(path))) { await putFile(path, await drawIcon(size), "Add app icon"); made.push(path); }
 }
-if (!(await getFile("og.jpg"))) { await makeOg(); made.push("og.jpg"); }
+if (!(await getFile("og2.jpg"))) { await makeOg(); made.push("og2.jpg"); }
 return made;
 }
 function afterConnect() {
@@ -287,7 +287,6 @@ S.delArm = t.dataset.del; clearTimeout(S.delTimer);
 S.delTimer = setTimeout(() => { S.delArm = null; renderList(); }, 4000); renderList();
 }
 else if (t.dataset.pcat) {
-if ((t.dataset.pcat === "Kids") !== (S.cur.category === "Kids")) S.cur.sizes = [];
 S.cur.category = t.dataset.pcat; renderCat(); renderSizes();
 }
 else if (t.dataset.pdel) { S.cur.photos.splice(+t.dataset.pdel, 1); renderPhoto(); }
@@ -335,4 +334,4 @@ const err = $("#setupErr"); err.textContent = explain(e); err.hidden = false;
 }
 show("setup");
 })();
-  
+                      
