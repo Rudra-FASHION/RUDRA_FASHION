@@ -1,4 +1,5 @@
 {
   "codFee": 40,
-  "freeAbove": 699
+  "freeAbove": 699,
+  "api": "https://rudra-pay.varmaaditi842.workers.dev"
 }
