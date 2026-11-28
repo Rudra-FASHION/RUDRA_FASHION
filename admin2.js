@@ -24,7 +24,7 @@
   }
   async function showState() {
     if (!api() || !$("#cfPass").value) return;
-    try { const s = await srv("/admin/state"); $("#cfState").textContent = s.keyId ? `Saved: ${s.keyId} ${/_live_/.test(s.keyId) ? "(LIVE, asli paisa)" : "(TEST, nakli paisa)"}${s.hasSecret ? ", secret saved" : ""}${s.hasWebhook ? ", webhook secret saved" : ""}` : "Abhi koi key saved nahi hai."; }
+    try { const s = await srv("/admin/state"); $("#cfState").textContent = s.keyId ? `Saved: ${s.keyId} ${/_live_/.test(s.keyId) ? "(LIVE, asli paisa)" : "(TEST, nakli paisa)"}${s.hasSecret ? ", secret saved" : ""}${s.hasWebhook ? ", webhook secret saved" : " | DHYAN DO: webhook secret save nahi hai, kabhi kabhi paid order 'Payment pending' dikh sakta hai. Neeche 'Razorpay se check karo' dabao ya webhook jodo."}` : "Abhi koi key saved nahi hai."; }
     catch (e) { $("#cfState").textContent = e.message; }
   }
   async function load() {
@@ -63,15 +63,17 @@
   });
   const LABEL = { paid: "Paid ✓", created: "Payment pending", dispatched: "Dispatched", delivered: "Delivered", cancelled: "Cancelled" };
   const st = document.createElement("style");
-  st.textContent = ".ord .ln{display:flex;gap:10px;align-items:center}.ord .ln img{width:56px;height:70px;object-fit:cover;border-radius:8px;flex:none;background:#26211c}.ord .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:800;font-size:13px;background:#1f8a4c;color:#fff}.ord .badge.created{background:#b7791f}.ord .badge.cancelled{background:#b23b29}.ord .addr{background:rgba(127,127,127,.15);border-radius:8px;padding:8px}.ord a.mini{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}";
+  st.textContent = "[hidden]{display:none!important}.ord .ln{display:flex;gap:10px;align-items:center}.ord .ln img{width:56px;height:70px;object-fit:cover;border-radius:8px;flex:none;background:#26211c}.ord .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:800;font-size:13px;background:#1f8a4c;color:#fff}.ord .badge.created{background:#b7791f}.ord .badge.cancelled{background:#b23b29}.ord .addr{background:rgba(127,127,127,.15);border-radius:8px;padding:8px}.ord a.mini{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}";
   document.head.appendChild(st);
   const pimg = n => { const p = S.products.find(x => x.name === n), u = p && ((p.images && p.images[0]) || p.img) || ""; return /^images\/[A-Za-z0-9._-]+$/.test(u) ? u : ""; };
   const thanks = o => `Namaste ${o.cust.name}, aapka order (Order ID: ${o.ref || o.id}) hume mil gaya hai. Hum jaldi aap tak pahuchayenge.${o.type === "cod" ? " Delivery par " + inr(o.due) + " dena hoga." : ""} Rudra Fashion ki website se shopping karne ke liye dhanyawad! 7 din ke andar aapka order aap tak pahunch jayega, kripya order lene ke liye taiyar rahein.`;
-  async function orders() {
-    const box = $("#ordList"); box.textContent = "Load ho raha hai...";
+  let nextCur = "";
+  async function orders(more) {
+    const box = $("#ordList"); if (!more) box.textContent = "Load ho raha hai...";
     try {
-      const { orders } = await srv("/admin/orders");
-      box.innerHTML = orders.length ? orders.map(o => {
+      const { orders, cursor } = await srv("/admin/orders" + (more && nextCur ? "?cursor=" + encodeURIComponent(nextCur) : ""));
+      nextCur = cursor || ""; $("#ordMore").hidden = !nextCur;
+      const html = orders.length ? orders.map(o => {
         const ph = String(o.cust.phone).replace(/\D/g, ""), paid = ["paid", "dispatched", "delivered"].includes(o.status), cod = o.type === "cod";
         return `
         <div class="ord ${esc(o.status)}">
@@ -84,12 +86,21 @@
           ${o.status === "paid" ? `<button class="mini" type="button" data-os="dispatched" data-oid="${esc(o.id)}">Dispatched mark karo</button>` : ""}
           ${o.status === "dispatched" ? `<button class="mini" type="button" data-os="delivered" data-oid="${esc(o.id)}">Delivered mark karo</button>` : ""}
         </div>`; }).join("") : "Abhi koi online order nahi aaya.";
-    } catch (e) { box.textContent = e.message; }
+      if (more) box.insertAdjacentHTML("beforeend", html); else box.innerHTML = html;
+    } catch (e) { if (!more) box.textContent = e.message; else toast(e.message); }
   }
-  $("#ordLoad").addEventListener("click", orders);
+  const toast = t => msg(t, true);
+  $("#ordLoad").addEventListener("click", () => orders());
+  $("#ordMore").addEventListener("click", () => orders(true));
+  $("#ordSync").addEventListener("click", async () => {
+    const b = $("#ordSync"); b.disabled = true; b.textContent = "Check ho raha hai...";
+    try { const r = await srv("/admin/sync", "POST", {}); msg(r.fixed ? r.fixed + " order Paid mark ho gaye (payment mil chuka tha)." : "Sab theek hai, koi order chhoota nahi."); await orders(); }
+    catch (e) { msg(e.message, true); }
+    b.disabled = false; b.textContent = "Razorpay se check karo";
+  });
   $("#ordList").addEventListener("click", async e => {
     const b = e.target.closest("[data-os]"); if (!b) return;
     b.disabled = true;
-    try { await srv("/admin/status", "POST", { id: b.dataset.oid, status: b.dataset.os }); orders(); } catch (x) { b.disabled = false; }
+    try { await srv("/admin/status", "POST", { id: b.dataset.oid, status: b.dataset.os }); orders(); } catch (x) { b.disabled = false; msg(x.message, true); }
   });
 })();
