@@ -8,6 +8,8 @@ set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
 del(k) { try { localStorage.removeItem(k); } catch (e) {} }
 };
 const SIZE_SETS = { Men: ["S", "M", "L", "XL", "XXL"], Women: ["S", "M", "L", "XL", "XXL"] };
+const PANT = ["28", "30", "32", "34", "36"];
+const sizeSet = () => S.cur.kind === "pant" ? PANT : SIZE_SETS[S.cur.category];
 const DEFAULT_LOOK = { Men: ["tee", "#d8d0c0"], Women: ["kurti", "#8c2f45"] };
 
 const S = { token: "", repo: "", branch: "main", products: [], thumbs: {}, cur: null, isNew: false, busy: false, delTimer: 0, delArm: null };
@@ -112,7 +114,7 @@ function setStatus(msg) { $("#status").textContent = msg; }
 function openEdit(p) {
 S.isNew = !p;
 const base = p || { id: "p" + Date.now().toString(36), name: "", category: "Men", price: "", mrp: "", desc: "", sizes: [], type: "", tone: "", img: "", soldOut: false };
-S.cur = { ...base, sizes: [...(base.sizes || [])], photos: allImgs(base).filter(u => srcOf(u)).map(u => ({ path: u, src: srcOf(u) })) };
+S.cur = { ...base, kind: (base.sizes || []).some(s => /^\d+$/.test(s)) ? "pant" : "std", sizes: [...(base.sizes || [])], photos: allImgs(base).filter(u => srcOf(u)).map(u => ({ path: u, src: srcOf(u) })) };
 $("#pfName").value = base.name; $("#pfPrice").value = base.price; $("#pfMrp").value = base.mrp || "";
 $("#pfDesc").value = base.desc || ""; $("#pfSold").checked = !!base.soldOut; $("#pfCustom").value = "";
 $("#pfErr").hidden = true; $("#status").hidden = true;
@@ -122,7 +124,8 @@ renderCat(); renderSizes(); renderPhoto(); renderDisc(); show("editor");
 }
 function renderCat() { document.querySelectorAll("#pfCat button").forEach(b => b.setAttribute("aria-pressed", b.dataset.pcat === S.cur.category)); }
 function renderSizes() {
-const all = [...new Set([...SIZE_SETS[S.cur.category], ...S.cur.sizes])];
+const all = [...new Set([...sizeSet(), ...S.cur.sizes])];
+document.querySelectorAll("#pfKind button").forEach(b => b.setAttribute("aria-pressed", b.dataset.pkind === S.cur.kind));
 $("#pfSizes").innerHTML = all.map(s => `<button class="size" type="button" data-psize="${esc(s)}" aria-pressed="${S.cur.sizes.includes(s)}">${esc(s)}</button>`).join("");
 }
 function renderPhoto() {
@@ -161,7 +164,7 @@ if (!S.cur.sizes.length) return fail("Kam se kam ek size chuno.");
 const old = S.products.find(x => x.id === S.cur.id);
 const oldImgs = old ? allImgs(old) : [];
 const look = DEFAULT_LOOK[S.cur.category];
-const order = [...new Set([...SIZE_SETS[S.cur.category], ...S.cur.sizes])];
+const order = [...new Set([...sizeSet(), ...S.cur.sizes])];
 const item = {
 id: S.cur.id, name, category: S.cur.category, price, mrp,
 desc: $("#pfDesc").value.trim(), sizes: order.filter(s => S.cur.sizes.includes(s)),
@@ -289,6 +292,7 @@ S.delTimer = setTimeout(() => { S.delArm = null; renderList(); }, 4000); renderL
 else if (t.dataset.pcat) {
 S.cur.category = t.dataset.pcat; renderCat(); renderSizes();
 }
+else if (t.dataset.pkind) { S.cur.kind = t.dataset.pkind; S.cur.sizes = S.cur.sizes.filter(s => sizeSet().includes(s)); renderSizes(); }
 else if (t.dataset.pdel) { S.cur.photos.splice(+t.dataset.pdel, 1); renderPhoto(); }
 else if (t.dataset.pfirst) { const x = S.cur.photos.splice(+t.dataset.pfirst, 1)[0]; S.cur.photos.unshift(x); renderPhoto(); }
 else if (t.dataset.psize) {
@@ -334,4 +338,4 @@ const err = $("#setupErr"); err.textContent = explain(e); err.hidden = false;
 }
 show("setup");
 })();
-                      
+  
