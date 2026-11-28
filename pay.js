@@ -1,9 +1,14 @@
 // Online payment through Razorpay. Runs only when a payment server is set in the admin.
 let paying = false;
+const codAdv = () => !!CONFIG.api && CONFIG.codAdvance > 0 && $("#payMode").value === "COD";
 function afterCart() {
   const online = $("#payMode").value === "ONLINE", btn = $("#orderBtn");
   if (!btn) return;
-  btn.textContent = online ? "Pay " + inr(total()) + " securely" : "Confirm order on WhatsApp";
+  btn.textContent = online ? "Pay " + inr(total()) + " securely" : codAdv() ? "Pay " + inr(CONFIG.codAdvance) + " advance & confirm order" : "Confirm order on WhatsApp";
+  let h = $("#advHint");
+  if (!h) { h = document.createElement("p"); h.id = "advHint"; h.style.cssText = "font-size:13px;line-height:1.5;margin:8px 0 0;color:var(--muted)"; $("#payMode").parentNode.appendChild(h); }
+  h.hidden = !codAdv() || cartLines().length === 0;
+  h.textContent = `Cash on delivery order confirm karne ke liye ${inr(CONFIG.codAdvance)} advance dena hoga. Ye advance kapde ke daam me nahi katta, alag hai. Kapde ke ${inr(total())} aapko delivery par dene honge.`;
   btn.disabled = cartLines().length === 0 || paying;
   const m = $("#paidMsg"); if (m && cartLines().length) m.hidden = true;
 }
@@ -24,22 +29,22 @@ const post = async (path, body) => {
   if (!r.ok) throw new Error(j.error || "Kuch gadbad hui. Dobara try karo.");
   return j;
 };
-function showPaid(ref, rows, name, phone, addr, tot, verified) {
+function showPaid(ref, rows, name, phone, addr, tot, verified, adv) {
   let m = $("#paidMsg");
   if (!m) { m = document.createElement("div"); m.id = "paidMsg"; m.className = "done"; $("#done").before(m); }
-  const wa = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(`*Paid order - Rudra Fashion*\nOrder ID: ${ref}\n\n${rows}\n\n*Paid online: ${inr(tot)}*\n\nName: ${name}\nPhone: ${phone}\nAddress: ${addr}`);
+  const wa = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(`*${adv ? "COD order (advance paid)" : "Paid order"} - Rudra Fashion*\nOrder ID: ${ref}\n\n${rows}\n\n${adv ? "*COD order. Advance paid: " + inr(adv) + " (alag). Delivery par dena hai: " + inr(tot) + "*" : "*Paid online: " + inr(tot) + "*"}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${addr}`);
   m.innerHTML = verified
-    ? `<b>Payment mil gaya. Order confirmed ✓</b><br>Aapka order hume mil gaya hai (Order ID: <b>${ref}</b>). Hum jaldi aap tak pahuchayenge. Hamari website se shopping karne ke liye dhanyawad! 7 din ke andar aapka order aap tak pahunch jayega, kripya order lene ke liye taiyar rahein.<br><a href="${wa}" target="_blank" rel="noopener">Order ki jaankari WhatsApp par bhi bhejo</a>`
+    ? `<b>${adv ? "Advance mil gaya. COD order confirmed ✓" : "Payment mil gaya. Order confirmed ✓"}</b><br>${adv ? "Delivery par " + inr(tot) + " dena hoga. " : ""}Aapka order hume mil gaya hai (Order ID: <b>${ref}</b>). Hum jaldi aap tak pahuchayenge. Hamari website se shopping karne ke liye dhanyawad! 7 din ke andar aapka order aap tak pahunch jayega, kripya order lene ke liye taiyar rahein.<br><a href="${wa}" target="_blank" rel="noopener">Order ki jaankari WhatsApp par bhi bhejo</a>`
     : `<b>Payment hua hai to chinta mat karo.</b> Order ID <b>${ref}</b> note kar lo. Confirmation me thoda time lag sakta hai.<br><a href="${wa}" target="_blank" rel="noopener">WhatsApp par Order ID bhejo</a>`;
   m.hidden = false; m.scrollIntoView({ block: "center" });
 }
-async function payOnline() {
+async function payOnline(mode) {
   const c = cust(); if (!c || paying) return;
   paying = true; afterCart(); $("#orderBtn").textContent = "Please wait...";
   const lines = cartLines(), ref = state.orderId, tot = total();
   const rows = lines.map((i, n) => `${n + 1}. ${i.p.name} | Size ${i.size} | Qty ${i.qty} | ${inr(i.p.price * i.qty)}`).join("\n");
   try {
-    const o = await post("/order", { items: lines.map(i => ({ id: i.id, size: i.size, qty: i.qty })), cust: c, ref });
+    const o = await post("/order", { items: lines.map(i => ({ id: i.id, size: i.size, qty: i.qty })), cust: c, ref, mode });
     await loadRzp();
     const rz = new Razorpay({
       key: o.key, order_id: o.orderId, amount: o.amount, currency: "INR", name: CONFIG.shopName, description: "Order " + ref,
@@ -48,7 +53,7 @@ async function payOnline() {
         let ok = false;
         try { ok = (await post("/verify", resp)).ok; } catch (e) {}
         state.cart = []; state.orderId = "RF" + Date.now().toString(36).slice(-5).toUpperCase(); paying = false;
-        renderCart(); showPaid(ref, rows, c.name, c.phone, c.addr, tot, ok);
+        renderCart(); showPaid(ref, rows, c.name, c.phone, c.addr, tot, ok, mode === "cod" ? o.amount / 100 : 0);
       },
       modal: { ondismiss: () => { paying = false; afterCart(); } }
     });
@@ -57,5 +62,5 @@ async function payOnline() {
   } catch (e) { toast(e.message); paying = false; afterCart(); }
 }
 document.addEventListener("click", e => {
-  if (e.target.closest("#orderBtn") && $("#payMode").value === "ONLINE") { e.stopImmediatePropagation(); e.preventDefault(); payOnline(); }
+  if (e.target.closest("#orderBtn") && ($("#payMode").value === "ONLINE" || codAdv())) { e.stopImmediatePropagation(); e.preventDefault(); payOnline($("#payMode").value === "ONLINE" ? "online" : "cod"); }
 }, true);
