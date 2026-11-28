@@ -85,7 +85,7 @@ $("#list").innerHTML = S.products.length ? S.products.map(p => {
 const src = imgSrc(p);
 return `<div class="prow">
 <div class="pthumb">${src ? `<img src="${esc(src)}" alt="">` : "Photo nahi"}</div>
-<div class="pinfo"><b>${esc(p.name)}</b><small>${esc(p.category)} · ${allImgs(p).length} photo · ${inr(p.price)} · Delivery ${p.ship > 0 ? inr(p.ship) : "free"}${p.mrp > p.price ? " (MRP " + inr(p.mrp) + ")" : ""}${p.soldOut ? ' · <span class="tagsold">Sold out</span>' : ""}</small></div>
+<div class="pinfo"><b>${esc(p.name)}</b><small>${esc(p.category)} · ${allImgs(p).length} photo · ${inr(p.price)}${p.mrp > p.price ? " (MRP " + inr(p.mrp) + ")" : ""}${p.soldOut ? ' · <span class="tagsold">Sold out</span>' : ""}</small></div>
 <div class="pbtns">
 <button class="mini" type="button" data-edit="${esc(p.id)}">Badlo</button>
 <button class="mini${S.delArm === p.id ? " armed" : ""}" type="button" data-del="${esc(p.id)}">${S.delArm === p.id ? "Pakka hatana hai?" : "Hatao"}</button>
@@ -111,9 +111,9 @@ function setStatus(msg) { $("#status").textContent = msg; }
 
 function openEdit(p) {
 S.isNew = !p;
-const base = p || { id: "p" + Date.now().toString(36), name: "", category: "Men", price: "", mrp: "", ship: "", desc: "", sizes: [], type: "", tone: "", img: "", soldOut: false };
+const base = p || { id: "p" + Date.now().toString(36), name: "", category: "Men", price: "", mrp: "", desc: "", sizes: [], type: "", tone: "", img: "", soldOut: false };
 S.cur = { ...base, sizes: [...(base.sizes || [])], photos: allImgs(base).filter(u => srcOf(u)).map(u => ({ path: u, src: srcOf(u) })) };
-$("#pfName").value = base.name; $("#pfPrice").value = base.price; $("#pfMrp").value = base.mrp || ""; $("#pfShip").value = base.ship > 0 ? base.ship : "";
+$("#pfName").value = base.name; $("#pfPrice").value = base.price; $("#pfMrp").value = base.mrp || "";
 $("#pfDesc").value = base.desc || ""; $("#pfSold").checked = !!base.soldOut; $("#pfCustom").value = "";
 $("#pfErr").hidden = true; $("#status").hidden = true;
 $("#pfDelete").hidden = !p; $("#pfDelete").classList.remove("armed"); $("#pfDelete").textContent = "Ye kapda hata do";
@@ -163,7 +163,7 @@ const oldImgs = old ? allImgs(old) : [];
 const look = DEFAULT_LOOK[S.cur.category];
 const order = [...new Set([...SIZE_SETS[S.cur.category], ...S.cur.sizes])];
 const item = {
-id: S.cur.id, name, category: S.cur.category, price, mrp, ship: Math.max(0, Math.round(+$("#pfShip").value || 0)),
+id: S.cur.id, name, category: S.cur.category, price, mrp,
 desc: $("#pfDesc").value.trim(), sizes: order.filter(s => S.cur.sizes.includes(s)),
 type: S.cur.type || look[0], tone: S.cur.tone || look[1], images: [], img: "", soldOut: $("#pfSold").checked
 };
@@ -324,6 +324,7 @@ setTimeout(() => { b.classList.remove("armed"); b.textContent = "Ye kapda hata d
 (async function start() {
 $("#repoIn").value = store.get("rudra-admin-repo") || guessRepo();
 $("#noticeLink").href = $("#storeLink").href;
+window.RF = { S, $, esc, inr, gh, getFile, putFile, toB64, fromB64, store };
 const token = store.get("rudra-admin-token"), repo = store.get("rudra-admin-repo");
 if (token && repo) {
 try { await connect(repo, token); showHome(""); afterConnect(); return; }
@@ -334,4 +335,4 @@ const err = $("#setupErr"); err.textContent = explain(e); err.hidden = false;
 }
 show("setup");
 })();
-                                                
+  
