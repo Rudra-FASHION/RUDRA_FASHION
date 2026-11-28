@@ -4,7 +4,8 @@ upi: "BHARATPE2O0U0F9X3V74933@unitype",
 upiAppButtons: true,               // merchant UPI ID is set, app buttons work
 showQr: false,                     // true to also show a QR code at checkout
 freeDeliveryAbove: 699,
-codFee: 0,                         // delivery charge on cash on delivery only (set in admin)
+codFee: 0,
+codAdvance: 0,                     // advance (Rs) to confirm a COD order, set in admin                         // delivery charge on cash on delivery only (set in admin)
 api: "",                           // payment server link (set in admin)
 shopName: "Rudra Fashion"
 };
@@ -16,7 +17,7 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&a
 const okImg = u => typeof u === "string" && (/^images\/[A-Za-z0-9._-]+$/.test(u) || u.startsWith("https://"));
 const imgs = p => (Array.isArray(p.images) && p.images.length ? p.images : (p.img ? [p.img] : [])).filter(okImg);
 const inr = n => "₹" + Number(n).toLocaleString("en-IN");
-const CAT_LABEL = { All: "All collection", Men: "Men's wear", Women: "Women's wear", Kids: "Kids' wear" };
+const CAT_LABEL = { All: "All collection", Men: "Men's wear", Women: "Women's wear" };
 const state = { cat: "All", q: "", sel: {}, cart: [] };
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -46,7 +47,7 @@ clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show
 }
 
 function renderArches() {
-const cats = ["Men", "Women", "Kids"].filter(c => products.some(p => p.category === c));
+const cats = ["Men", "Women"].filter(c => products.some(p => p.category === c));
 const el = $("#arches");
 el.style.setProperty("--n", cats.length || 1);
 el.innerHTML = cats.map(c => {
@@ -282,7 +283,7 @@ try {
 const r = await fetch("products.json?v=" + Date.now(), { cache: "no-store" });
 if (!r.ok) throw new Error("HTTP " + r.status);
 const d = await r.json();
-products = Array.isArray(d.products) ? d.products : [];
+products = (Array.isArray(d.products) ? d.products : []).filter(p => p.category !== "Kids");
 } catch (e) {
 products = FALLBACK;
 }
@@ -290,6 +291,7 @@ try {
 const s = await (await fetch("settings.json?v=" + Date.now(), { cache: "no-store" })).json();
 if (/^https:\/\//.test(s.api || "")) CONFIG.api = s.api.replace(/\/+$/, "");
 if (s.codFee >= 0) CONFIG.codFee = +s.codFee;
+if (s.codAdvance >= 0) CONFIG.codAdvance = +s.codAdvance;
 if (s.freeAbove >= 0) CONFIG.freeDeliveryAbove = +s.freeAbove;
 } catch (e) {}
 document.dispatchEvent(new Event("rf-settings"));
